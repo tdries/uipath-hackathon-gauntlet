@@ -39,3 +39,6 @@ runs/
 
 # OS
 Thumbs.db
+
+# Pitch deck backup template (kept locally only)
+Submission deck.template.pptx.bak
