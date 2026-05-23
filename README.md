@@ -22,7 +22,7 @@
 
 UiPath Agent Evaluations tell you whether your agent passes the tests **you wrote**. They don't tell you what happens when a real attacker shows up with a prompt you never imagined.
 
-**Gauntlet closes that gap.** A **Red Coach** agent (Claude Opus) plays an adversary against any UiPath Agent, Maestro Flow, or external target. When the existing attack corpus stops scoring hits, the Coach **invents new attack personas mid-fight**. Every winning attack is automatically persisted to **UiPath Test Manager** as a permanent regression test. Every failing fight opens an **Action Center task** with a concrete fix recommendation written by a second Opus agent.
+**Gauntlet closes that gap.** A **Red Coach** agent (powered by a frontier LLM) plays an adversary against any UiPath Agent, Maestro Flow, or external target. When the existing attack corpus stops scoring hits, the Coach **invents new attack personas mid-fight**. Every winning attack is automatically persisted to **UiPath Test Manager** as a permanent regression test. Every failing fight opens an **Action Center task** with a concrete fix recommendation written by a second LLM-driven agent.
 
 The result is an **agentic test factory** that grows the regression suite by itself, with every fight double-tagged against **OWASP LLM Top-10** and **MITRE ATLAS** so the coverage matrix is something a compliance officer can actually read.
 
@@ -47,7 +47,7 @@ Tenant status at a glance. Robustness score, top critical findings, recent fight
 
 ### Coach Lab. Invent a new attack persona
 
-The Coach picks the persona × posture combination with the highest expected reward (Thompson sampling), or asks Claude Opus to invent a new one. The risk-weighted coverage table shows exactly where Blue is weakest.
+The Coach picks the persona × posture combination with the highest expected reward (Thompson sampling), or asks the LLM to invent a new one. The risk-weighted coverage table shows exactly where Blue is weakest.
 
 ![Coach Lab](docs/screenshots/02-coach-lab.png)
 
@@ -90,7 +90,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 | **Maestro Flow** (`RoundOrchestrator`) | Single round end-to-end: Red attack → Blue response → judge → score | [uipath/gauntlet/RoundOrchestrator/](uipath/gauntlet/RoundOrchestrator/) |
 | **Agent Builder** (`MetroBankCSR`) | Blue target. Reference customer-service agent (system under test) | [uipath/gauntlet/MetroBankCSR/](uipath/gauntlet/MetroBankCSR/) |
 | **Agent Builder** (`RefereeAgent`) | Judge. Scores each round against the rubric | [uipath/gauntlet/RefereeAgent/](uipath/gauntlet/RefereeAgent/) |
-| **Coded Agents** (Python, LangGraph + Opus) | Red Coach (`gauntlet coach`), Fix Recommender (`gauntlet fix`) | [src/gauntlet/](src/gauntlet/) |
+| **Coded Agents** (Python, LangGraph) | Red Coach (`gauntlet coach`), Fix Recommender (`gauntlet fix`) | [src/gauntlet/](src/gauntlet/) |
 | **Coded App** (`gauntletapp`) | Operator surface: Threat Dashboard, Coach Lab, Fix Lab, Analytics, Audit, Logs | [uipath/gauntlet-console/](uipath/gauntlet-console/) |
 | **Test Manager** | Persistent regression set, auto-populated by Coach on winning attacks | Imported via [scripts/import_runs_to_test_manager.py](scripts/import_runs_to_test_manager.py) |
 | **Action Center** | Human-in-the-loop fix approval; tasks opened from Fix Lab | Live API call from browser via `@uipath/uipath-typescript` |
@@ -101,7 +101,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 
 **Both Coded Agents and Low-code Agents.** Gauntlet is deliberately polyglot to prove the arena is framework-neutral.
 
-- **Coded Agents (Python, LangGraph + Claude Opus):**
+- **Coded Agents (Python, LangGraph + a frontier LLM):**
   - `gauntlet coach`. Adversarial Red Coach with risk-weighted persona selection ([src/gauntlet/coach.py](src/gauntlet/coach.py))
   - `gauntlet fix`. Fix Recommender ([src/gauntlet/fix.py](src/gauntlet/fix.py))
   - `gauntlet referee` (local mirror). Judge logic ([src/gauntlet/referee.py](src/gauntlet/referee.py))
@@ -126,7 +126,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 - **Node.js 20+**
 - **Python 3.11+**
 - **`uip` CLI 1.0.4+** (install with `npm i -g @uipath/cli`)
-- **Anthropic API key** (Claude Opus access)
+- **LLM API key** (frontier-model access)
 
 ### 1. Clone and configure
 
@@ -195,7 +195,7 @@ Once everything is deployed:
 
 1. **Open `gauntletapp`** in your UiPath tenant.
 2. On the **Dashboard**, click *Run a fight*. Pick a Red persona (e.g. `aggressive-lawyer`), a scenario, and the Blue posture. Click **Replay this fight**.
-3. Open **Coach Lab** from the sidebar. Paste your Anthropic API key into the modal (stays in `sessionStorage`, never sent to Gauntlet servers). Click **Run live (add key)**. The Coach invents a new attack persona in front of you.
+3. Open **Coach Lab** from the sidebar. Paste your LLM API key into the modal (stays in `sessionStorage`, never sent to Gauntlet servers). Click **Run live (add key)**. The Coach invents a new attack persona in front of you.
 4. On the **Defend** tab, open any losing fight. The **Fix Recommender** has already drafted a patch. Click **File to Action Center** to create a real Action Center task in your tenant.
 5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 75+ fights.
 
@@ -215,7 +215,7 @@ The app falls back to the bundled offline corpus when not authenticated, so judg
 
 Gauntlet is the **adversarial complement to UiPath Agent Evaluations**. Where Agent Evaluations score your agent against a static rubric, Gauntlet scores it against an opponent that's actively trying to break it, and turns every successful attack into a permanent test case.
 
-Built end-to-end with **Claude Code** as the coding agent. Thematically right: an agent building a tool to keep agents honest.
+Built end-to-end with an agentic coding tool. Thematically right: an agent building a tool to keep agents honest.
 
 ## Repo layout
 

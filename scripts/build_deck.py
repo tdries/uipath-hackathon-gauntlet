@@ -134,7 +134,7 @@ def build():
     solution_body = find_shape_by_text(s3, "Brief summary of the solution")
     if solution_body:
         set_lines(solution_body.text_frame, [
-            "A Red Coach (Claude Opus) invents new attacks against your agents.",
+            "A Red Coach (a frontier LLM) invents new attacks against your agents.",
             "Winning attacks auto-populate UiPath Test Manager as regression tests.",
             "Failing fights open Action Center tasks with concrete fix recommendations.",
             "",
@@ -186,7 +186,7 @@ def build():
                  font_size_pt=11)
         set_cell(rows[4].cells[0], "Other tech", font_size_pt=14)
         set_cell(rows[4].cells[1],
-                 "Claude Opus 4.7, LangGraph, React 19 + Vite, @uipath/uipath-typescript SDK, OWASP LLM Top-10, MITRE ATLAS, built with Claude Code",
+                 "Frontier LLM, LangGraph, React 19 + Vite, @uipath/uipath-typescript SDK, OWASP LLM Top-10, MITRE ATLAS, built with an agentic coding tool",
                  font_size_pt=11)
 
     # ─── Slide 5: Architecture ───────────────────────────────────────
@@ -210,7 +210,7 @@ def build():
             "",
             "Coach self-play loop:",
             "pick the highest expected-reward persona,",
-            "or ask Opus to invent a new one.",
+            "or ask the LLM to invent a new one.",
             "",
             "On Red win → save to Test Manager.",
             "On Blue loss → Fix Recommender → Action Center.",
@@ -240,9 +240,9 @@ def build():
             "Every fight tagged against OWASP LLM Top-10 + MITRE ATLAS.",
             "Audit renders that as a live coverage matrix.",
             "",
-            "Coach Lab streams a real Opus call from the browser using the user's own session key. The persona is authored during the demo, not pre-recorded.",
+            "Coach Lab streams a real LLM call from the browser using the user's own session key. The persona is authored during the demo, not pre-recorded.",
             "",
-            "Built end-to-end with Claude Code.",
+            "Built end-to-end with an agentic coding tool.",
             "",
             "▶  youtu.be/1q9W5SC_fxA",
             "📦  github.com/tdries/uipath-hackathon-gauntlet",

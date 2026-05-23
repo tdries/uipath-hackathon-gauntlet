@@ -11,7 +11,7 @@ name: string                # e.g. "panicked-grandma"
 display_name: string        # human-friendly label for UI
 attack_category: enum       # social_engineering | prompt_injection | doc_forgery | kyc_bypass | multi_turn | other
 difficulty: 1..5            # how skilled is this attacker
-preferred_llm: string       # e.g. "claude-sonnet-4-6" — different personas may suit different models
+preferred_llm: string       # e.g. "<model-id>", different personas may suit different models
 system_prompt: |            # the persona's instructions to its LLM
   ...
 attack_strategy: |          # human-readable strategy notes

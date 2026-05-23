@@ -2,7 +2,7 @@
 
 ## Mental model
 
-Gauntlet pits a **Red Coach** agent against a **Blue target** agent in continuous rounds. Each round is one Maestro Flow execution inside a long-running Maestro Case. When Red wins a round, the Coach saves the winning attack into UiPath Test Manager as a permanent regression test. When Red loses, the Coach mutates its strategy and tries again, eventually inventing entirely new attack personas via Claude Opus.
+Gauntlet pits a **Red Coach** agent against a **Blue target** agent in continuous rounds. Each round is one Maestro Flow execution inside a long-running Maestro Case. When Red wins a round, the Coach saves the winning attack into UiPath Test Manager as a permanent regression test. When Red loses, the Coach mutates its strategy and tries again, eventually inventing entirely new attack personas via a frontier LLM.
 
 The whole loop is observable and operable through a UiPath Coded App that talks to the user's tenant in real time.
 
@@ -11,9 +11,9 @@ The whole loop is observable and operable through a UiPath Coded App that talks 
 | Role | UiPath component | Backed by |
 |---|---|---|
 | **Blue target (SUT)** | Agent Builder agent (`MetroBankCSR`) or any external target | Configurable LLM |
-| **Red Coach** | Python coded agent (`src/gauntlet/coach.py`) | Claude Opus + LangGraph |
+| **Red Coach** | Python coded agent (`src/gauntlet/coach.py`) | Frontier LLM + LangGraph |
 | **Referee** | Agent Builder agent (`RefereeAgent`) | LLM judge with rubric |
-| **Fix Recommender** | Python coded agent (`src/gauntlet/fix.py`) | Claude Opus |
+| **Fix Recommender** | Python coded agent (`src/gauntlet/fix.py`) | Frontier LLM |
 | **FightArena** | Maestro Case | Case orchestration |
 | **RoundOrchestrator** | Maestro Flow | Per-round flow |
 | **Console** | Coded App (`gauntletapp`) | React + `@uipath/uipath-typescript` |
@@ -46,7 +46,7 @@ The Maestro Case (`FightArena`) is the round container. Each round is one execut
 ## Coach self-play loop
 
 1. Pick the Red persona with the highest expected risk-weighted reward against this Blue target (Thompson sampling over the corpus).
-2. If no persona has positive expected reward, ask Opus to author a new one, conditioned on the last K losing transcripts.
+2. If no persona has positive expected reward, ask the LLM to author a new one, conditioned on the last K losing transcripts.
 3. Run the round.
 4. On win: persist the persona + transcript to Test Manager as a regression test.
 5. On loss: update reward priors. Loop.
@@ -66,7 +66,7 @@ The Threat Dashboard renders these as a coverage heatmap. The audit story is: "h
 | Tab | Purpose |
 |---|---|
 | **Dashboard** | Threat KPIs, critical findings, recent fights, mini coverage heatmap, quick actions |
-| **CoachLab** | Inspect personas, kick off a fight, "Run Live" calls Anthropic directly from the browser using a user-pasted session key |
+| **CoachLab** | Inspect personas, kick off a fight, "Run Live" calls the LLM directly from the browser using a user-pasted session key |
 | **Fix Lab** | Open a failed fight, read the Fix Recommender's proposal, file an Action Center task |
 | **Analytics** | Fight ladder vs. each Blue target, OWASP / MITRE coverage matrix, win-rate trends |
 
