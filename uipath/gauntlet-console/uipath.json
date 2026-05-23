@@ -1,0 +1,8 @@
+{
+  "scope": "OR.Folders.Read OR.Tasks OR.Tasks.Read OR.Tasks.Write OR.Execution.Read OR.Jobs",
+  "clientId": "10ee2901-05f7-4935-aabe-7ba339979d0e",
+  "orgName": "thesingularityisnearer",
+  "tenantName": "DefaultTenant",
+  "baseUrl": "https://api.uipath.com",
+  "redirectUri": "http://localhost:5173"
+}

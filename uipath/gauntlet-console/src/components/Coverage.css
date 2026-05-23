@@ -1,0 +1,63 @@
+.coverage-section { padding: 48px 0; }
+.coverage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.coverage-block {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.coverage-block-head {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--panel);
+  border-bottom: 1px solid var(--hairline);
+}
+.coverage-block-head h3 {
+  font-size: 14px;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+.coverage-summary {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+.coverage-summary strong { color: var(--ink); font-family: 'Poppins', sans-serif; font-weight: 700; }
+.coverage-summary .vuln-num { color: var(--red); }
+.coverage-block table { border: none; border-radius: 0; }
+.coverage-stat { display: inline-flex; gap: 4px; align-items: center; }
+
+.tax-id {
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--ink);
+}
+.tax-chip {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  background: var(--brand);
+  color: white;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.tax-name {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+
+@media (max-width: 920px) {
+  .coverage-grid { grid-template-columns: 1fr; }
+}

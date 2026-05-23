@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "FightArena",
+    "kind": "process",
+    "type": "caseManagement",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "6387374f-5e7e-4c8b-8d71-19b549fabb25",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "FightArena"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "CaseManagement",
+      "name": "FightArena",
+      "package": {
+        "key": "f2bb7d63-845b-4bf8-ab9a-fcc193c68e57"
+      },
+      "packageName": "gauntlet.caseManagement.FightArena",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "1c000789-cf77-4591-8d47-44652a9628d9",
+    "files": []
+  }
+}

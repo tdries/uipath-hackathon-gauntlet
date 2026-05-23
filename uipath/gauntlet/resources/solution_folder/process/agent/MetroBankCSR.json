@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "MetroBankCSR",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "c3fd6065-a2ef-4b89-8a48-ca0ae8e16fd6",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "MetroBankCSR"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "MetroBankCSR",
+      "package": {
+        "key": "7bb2b469-c7a8-4afd-b449-a0b3ad631e87"
+      },
+      "packageName": "gauntlet.agent.MetroBankCSR",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "f0bfb7cf-90c8-4118-a06c-cf1171d98b2d",
+    "files": []
+  }
+}

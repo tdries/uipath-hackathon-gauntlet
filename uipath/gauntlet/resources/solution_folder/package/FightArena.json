@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "FightArena",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "6387374f-5e7e-4c8b-8d71-19b549fabb25",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "FightArena"
+    },
+    "locks": [],
+    "key": "f2bb7d63-845b-4bf8-ab9a-fcc193c68e57",
+    "files": []
+  }
+}

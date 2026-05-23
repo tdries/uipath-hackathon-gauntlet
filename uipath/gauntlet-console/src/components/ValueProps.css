@@ -1,0 +1,57 @@
+.value-section {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.value-header {
+  margin-bottom: 28px;
+  max-width: 820px;
+}
+.value-header h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.value-card {
+  padding: 20px 22px;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  transition: all 0.15s;
+}
+.value-card:hover {
+  border-color: var(--ink-3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.value-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  color: var(--brand);
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+}
+.value-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+  font-family: 'Poppins', sans-serif;
+}
+.value-card p {
+  color: var(--ink-2);
+  font-size: 14px;
+  margin: 0;
+}
+
+@media (max-width: 880px) {
+  .value-grid { grid-template-columns: 1fr; }
+}

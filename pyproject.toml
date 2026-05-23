@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gauntlet"
+version = "0.1.0"
+description = "Adversarial red-team arena for AI customer-service agents — UiPath AgentHack 2026"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Tim Dries", email = "tim.dries@biztory.be" }]
+dependencies = [
+  "anthropic>=0.40.0",
+  "pydantic>=2.6",
+  "pyyaml>=6.0",
+  "rich>=13.7",
+  "click>=8.1",
+]
+
+[project.scripts]
+gauntlet = "gauntlet.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gauntlet"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,41 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+build/
+.next/
+.turbo/
+
+# UiPath
+.uipath/credentials
+*.nupkg
+.uipath/*.nupkg
+
+# Editors
+.DS_Store
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# Logs and run artifacts
+*.log
+logs/
+runs/
+*.replay.json
+
+# OS
+Thumbs.db

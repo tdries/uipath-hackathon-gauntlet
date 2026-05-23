@@ -1,0 +1,153 @@
+.hero {
+  padding: 56px 0 48px;
+  background:
+    radial-gradient(ellipse at top left, rgba(250, 70, 22, 0.06), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(0, 121, 191, 0.05), transparent 50%),
+    white;
+  border-bottom: 1px solid var(--hairline);
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+.hero-text { min-width: 0; }
+.hero-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.hero-logo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 18px rgba(194, 50, 12, 0.28));
+}
+@media (max-width: 720px) {
+  .hero-logo { width: 96px; height: 96px; }
+}
+.hero-brand-row .hero-eyebrow {
+  margin-bottom: 0;
+}
+.hero-eyebrow {
+  display: inline-block;
+  background: white;
+  border: 1px solid var(--hairline);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-size: 44px;
+  line-height: 1.12;
+  max-width: 680px;
+  font-weight: 800;
+}
+.hero-accent { color: var(--brand); }
+.hero-lede {
+  font-size: 17px;
+  color: var(--ink-2);
+  margin: 18px 0 12px;
+  max-width: 620px;
+}
+.hero-lede-secondary {
+  font-size: 15px;
+  color: var(--ink-3);
+  margin: 0 0 22px;
+}
+.hero-cta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero-posture {
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-md);
+}
+.posture-label {
+  color: var(--ink-3);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.posture-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 6px 0;
+  color: var(--ink);
+}
+.hero-posture-ok .posture-value { color: var(--ok); }
+.hero-posture-warn .posture-value { color: var(--warn); }
+.hero-posture-alert .posture-value { color: var(--red); }
+
+.posture-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+.posture-num {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--ink);
+}
+.posture-desc {
+  color: var(--ink-2);
+  font-size: 13px;
+}
+.posture-metric {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+.posture-metric > div { display: flex; flex-direction: column; gap: 2px; }
+.posture-metric-label {
+  font-size: 10px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.posture-metric-value {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink);
+}
+.posture-asr { color: var(--red); }
+
+.posture-alert {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: var(--red-bg);
+  color: var(--red);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+}
+
+.hero-sut {
+  margin: 8px 0 16px;
+}

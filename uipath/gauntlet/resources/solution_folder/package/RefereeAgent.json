@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "RefereeAgent",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "d142cc68-7003-47a6-9eb8-93cf48f49956",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "RefereeAgent"
+    },
+    "locks": [],
+    "key": "a746821e-b113-470e-bcc5-5a1a2de49e59",
+    "files": []
+  }
+}

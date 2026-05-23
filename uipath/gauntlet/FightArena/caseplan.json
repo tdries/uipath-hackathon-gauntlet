@@ -1,0 +1,312 @@
+{
+    "root": {
+        "id": "root",
+        "name": "Fight",
+        "type": "case-management:root",
+        "caseIdentifier": "Fight",
+        "caseAppEnabled": false,
+        "caseIdentifierType": "constant",
+        "version": "v19",
+        "publishVersion": 2,
+        "data": {
+            "intsvcActivityConfig": "v2",
+            "uipath": {
+                "bindings": [
+                    {
+                        "id": "bMetroName",
+                        "name": "name",
+                        "type": "string",
+                        "resource": "process",
+                        "resourceSubType": "Agent",
+                        "resourceKey": "solution_folder.MetroBankCSR",
+                        "default": "MetroBankCSR",
+                        "propertyAttribute": "name"
+                    },
+                    {
+                        "id": "bMetroFold",
+                        "name": "folderPath",
+                        "type": "string",
+                        "resource": "process",
+                        "resourceSubType": "Agent",
+                        "resourceKey": "solution_folder.MetroBankCSR",
+                        "default": "solution_folder",
+                        "propertyAttribute": "folderPath"
+                    },
+                    {
+                        "id": "bRefName00",
+                        "name": "name",
+                        "type": "string",
+                        "resource": "process",
+                        "resourceSubType": "Agent",
+                        "resourceKey": "solution_folder.RefereeAgent",
+                        "default": "RefereeAgent",
+                        "propertyAttribute": "name"
+                    },
+                    {
+                        "id": "bRefFold00",
+                        "name": "folderPath",
+                        "type": "string",
+                        "resource": "process",
+                        "resourceSubType": "Agent",
+                        "resourceKey": "solution_folder.RefereeAgent",
+                        "default": "solution_folder",
+                        "propertyAttribute": "folderPath"
+                    }
+                ],
+                "variables": {
+                    "inputs": [],
+                    "outputs": [],
+                    "inputOutputs": []
+                }
+            }
+        },
+        "caseExitConditions": [],
+        "description": "One adversarial round between Red attacker and Blue MetroBank CSR"
+    },
+    "nodes": [
+        {
+            "id": "trigger_1",
+            "type": "case-management:Trigger",
+            "position": {
+                "x": -100,
+                "y": 200
+            },
+            "style": {
+                "width": 96,
+                "height": 96
+            },
+            "measured": {
+                "width": 96,
+                "height": 96
+            },
+            "data": {
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "label": "Trigger 1",
+                "description": "Manually start a new fight."
+            }
+        },
+        {
+            "id": "Stage_AVW3EC",
+            "type": "case-management:Stage",
+            "position": {
+                "x": 100,
+                "y": 200
+            },
+            "style": {
+                "width": 304,
+                "opacity": 0.8
+            },
+            "measured": {
+                "width": 304,
+                "height": 128
+            },
+            "width": 304,
+            "zIndex": 1001,
+            "data": {
+                "label": "Matchmaking",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tMv70P5lN",
+                            "displayName": "Pick persona + scenario",
+                            "isRequired": true,
+                            "type": "action",
+                            "data": {
+                                "taskTitle": "Pick the red persona and scenario for this fight",
+                                "priority": "Medium"
+                            }
+                        }
+                    ]
+                ],
+                "isRequired": true
+            }
+        },
+        {
+            "id": "Stage_MvYRN9",
+            "type": "case-management:Stage",
+            "position": {
+                "x": 600,
+                "y": 200
+            },
+            "style": {
+                "width": 304,
+                "opacity": 0.8
+            },
+            "measured": {
+                "width": 304,
+                "height": 128
+            },
+            "width": 304,
+            "zIndex": 1001,
+            "data": {
+                "label": "Negotiating",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "t8BVvhJRE",
+                            "displayName": "Call MetroBank CSR",
+                            "elementId": "Stage_MvYRN9-t8BVvhJRE",
+                            "isRequired": true,
+                            "type": "agent",
+                            "data": {
+                                "name": "=bindings.bMetroName",
+                                "folderPath": "=bindings.bMetroFold",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                ],
+                "isRequired": true
+            }
+        },
+        {
+            "id": "Stage_LAotmt",
+            "type": "case-management:Stage",
+            "position": {
+                "x": 1100,
+                "y": 200
+            },
+            "style": {
+                "width": 304,
+                "opacity": 0.8
+            },
+            "measured": {
+                "width": 304,
+                "height": 128
+            },
+            "width": 304,
+            "zIndex": 1001,
+            "data": {
+                "label": "Verdict",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tkCwUjGZs",
+                            "displayName": "Call the Referee (Judge)",
+                            "elementId": "Stage_LAotmt-tkCwUjGZs",
+                            "isRequired": true,
+                            "type": "agent",
+                            "data": {
+                                "name": "=bindings.bRefName00",
+                                "folderPath": "=bindings.bRefFold00",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                ],
+                "isRequired": true
+            }
+        },
+        {
+            "id": "Stage_TrQ0C9",
+            "type": "case-management:Stage",
+            "position": {
+                "x": 1600,
+                "y": 200
+            },
+            "style": {
+                "width": 304,
+                "opacity": 0.8
+            },
+            "measured": {
+                "width": 304,
+                "height": 128
+            },
+            "width": 304,
+            "zIndex": 1001,
+            "data": {
+                "label": "Archived",
+                "parentElement": {
+                    "id": "root",
+                    "type": "case-management:root"
+                },
+                "isInvalidDropTarget": false,
+                "isPendingParent": false,
+                "tasks": [
+                    [
+                        {
+                            "id": "tPKYOEMIa",
+                            "displayName": "Persist fight to Test Cloud",
+                            "isRequired": true,
+                            "type": "action",
+                            "data": {
+                                "taskTitle": "Push transcript + verdict into Test Cloud as a regression case",
+                                "priority": "Medium"
+                            }
+                        }
+                    ]
+                ],
+                "isRequired": true
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "edge_QlNjtV",
+            "source": "trigger_1",
+            "target": "Stage_AVW3EC",
+            "sourceHandle": "trigger_1____source____right",
+            "targetHandle": "Stage_AVW3EC____target____left",
+            "data": {
+                "label": "Round opens"
+            },
+            "type": "case-management:TriggerEdge"
+        },
+        {
+            "id": "edge_OvIK4t",
+            "source": "Stage_AVW3EC",
+            "target": "Stage_MvYRN9",
+            "sourceHandle": "Stage_AVW3EC____source____right",
+            "targetHandle": "Stage_MvYRN9____target____left",
+            "data": {
+                "label": "Personas matched"
+            },
+            "type": "case-management:Edge"
+        },
+        {
+            "id": "edge_HMptYk",
+            "source": "Stage_MvYRN9",
+            "target": "Stage_LAotmt",
+            "sourceHandle": "Stage_MvYRN9____source____right",
+            "targetHandle": "Stage_LAotmt____target____left",
+            "data": {
+                "label": "Call ended"
+            },
+            "type": "case-management:Edge"
+        },
+        {
+            "id": "edge_KGLSsE",
+            "source": "Stage_LAotmt",
+            "target": "Stage_TrQ0C9",
+            "sourceHandle": "Stage_LAotmt____source____right",
+            "targetHandle": "Stage_TrQ0C9____target____left",
+            "data": {
+                "label": "Verdict recorded"
+            },
+            "type": "case-management:Edge"
+        }
+    ]
+}

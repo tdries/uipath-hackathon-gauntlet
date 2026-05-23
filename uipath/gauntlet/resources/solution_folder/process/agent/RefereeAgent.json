@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "RefereeAgent",
+    "kind": "process",
+    "type": "agent",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "d142cc68-7003-47a6-9eb8-93cf48f49956",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "RefereeAgent"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Agent",
+      "name": "RefereeAgent",
+      "package": {
+        "key": "a746821e-b113-470e-bcc5-5a1a2de49e59"
+      },
+      "packageName": "gauntlet.agent.RefereeAgent",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "c0bba232-d2a9-46bd-9e2f-16fb9d3fc5d4",
+    "files": []
+  }
+}

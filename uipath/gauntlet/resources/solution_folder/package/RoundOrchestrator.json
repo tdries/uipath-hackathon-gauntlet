@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "RoundOrchestrator",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "1f233bc5-fdf4-485e-8b22-031668cd06a5",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "RoundOrchestrator"
+    },
+    "locks": [],
+    "key": "407de0ea-58fd-4095-88aa-872c9b7017ec",
+    "files": []
+  }
+}

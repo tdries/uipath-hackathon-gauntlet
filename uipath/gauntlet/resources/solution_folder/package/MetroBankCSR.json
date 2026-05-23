@@ -1,0 +1,22 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "MetroBankCSR",
+    "kind": "package",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "c3fd6065-a2ef-4b89-8a48-ca0ae8e16fd6",
+    "dependencies": [],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "name": "MetroBankCSR"
+    },
+    "locks": [],
+    "key": "7bb2b469-c7a8-4afd-b449-a0b3ad631e87",
+    "files": []
+  }
+}

@@ -1,0 +1,113 @@
+.fightlog-section { padding: 48px 0; }
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.filter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-right: 4px;
+}
+.filter-chip {
+  background: white;
+  border: 1px solid var(--hairline);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-chip:hover {
+  border-color: var(--ink-3);
+  color: var(--ink);
+}
+.filter-chip.active {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+.result-count {
+  color: var(--ink-3);
+  font-size: 12px;
+  font-family: ui-monospace, monospace;
+}
+
+.table.fightlog tr.fight-row { cursor: pointer; }
+.table.fightlog tr.fight-row:hover { background: var(--panel); }
+.table.fightlog tr.fight-row.open { background: var(--panel); }
+.table.fightlog tr.fight-row.open td { font-weight: 600; }
+.table.fightlog tr.detail-row td { padding: 0; background: var(--bg); }
+
+.fix-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  border: 1px solid var(--brand);
+  color: var(--brand);
+  padding: 3px 9px 3px 4px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.fix-pill-btn:hover {
+  background: var(--brand);
+  color: white;
+}
+.fix-pill-btn:hover .sev-pill {
+  filter: brightness(1.1);
+}
+
+/* Search input + permalink actions */
+.filter-search {
+  flex: 1;
+  min-width: 240px;
+  max-width: 420px;
+}
+.fightlog-search {
+  width: 100%;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.12s;
+}
+.fightlog-search:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(250, 70, 22, 0.12);
+}
+.fightlog-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px 4px;
+  flex-wrap: wrap;
+}
+.fightlog-detail-id {
+  font-size: 11px;
+  color: var(--ink-3);
+  background: var(--panel);
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--hairline);
+}

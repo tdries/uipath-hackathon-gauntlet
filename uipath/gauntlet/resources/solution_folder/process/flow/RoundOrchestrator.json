@@ -1,0 +1,39 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "RoundOrchestrator",
+    "kind": "process",
+    "type": "flow",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "1f233bc5-fdf4-485e-8b22-031668cd06a5",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "RoundOrchestrator"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Flow",
+      "name": "RoundOrchestrator",
+      "package": {
+        "key": "407de0ea-58fd-4095-88aa-872c9b7017ec"
+      },
+      "packageName": "gauntlet.flow.RoundOrchestrator",
+      "inputArguments": "{}",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "e1e2e48b-8143-4bff-8d8b-ee1229f44b74",
+    "files": []
+  }
+}

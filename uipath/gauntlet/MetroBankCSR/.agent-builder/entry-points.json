@@ -1,0 +1,39 @@
+{
+  "$schema": "https://cloud.uipath.com/draft/2024-12/entry-point",
+  "$id": "entry-points.json",
+  "entryPoints": [
+    {
+      "filePath": "/content/agent.json",
+      "uniqueId": "29b9f7fc-e93d-4694-a112-31166f52722f",
+      "type": "agent",
+      "input": {
+        "type": "object",
+        "properties": {
+          "transcript": {
+            "type": "string",
+            "description": "The full call transcript so far, with each turn labelled. RED is the customer and BLUE is you. The latest turn is from RED — produce the next BLUE turn."
+          }
+        },
+        "required": [
+          "transcript"
+        ]
+      },
+      "output": {
+        "type": "object",
+        "properties": {
+          "reply": {
+            "type": "string",
+            "description": "Cara's next reply to the customer."
+          },
+          "tool_intent": {
+            "type": "string",
+            "description": "Optional tool name Cara wants the runtime to invoke before responding: lookup_account | verify_caller_identity | disclose_balance | initiate_transfer | escalate_to_human. Empty string if no tool needed."
+          }
+        },
+        "required": [
+          "reply"
+        ]
+      }
+    }
+  ]
+}

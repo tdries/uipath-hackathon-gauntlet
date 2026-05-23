@@ -1,0 +1,27 @@
+{
+    "DocVersion": "1.0.0",
+    "StudioMinVersion": "2025.10.0",
+    "SolutionId": "cf351ed9-c9ba-4aa2-ceb6-08deb24d397f",
+    "Projects": [
+        {
+            "Type": "Agent",
+            "ProjectRelativePath": "MetroBankCSR/project.uiproj",
+            "Id": "c3fd6065-a2ef-4b89-8a48-ca0ae8e16fd6"
+        },
+        {
+            "Type": "CaseManagement",
+            "ProjectRelativePath": "FightArena/project.uiproj",
+            "Id": "6387374f-5e7e-4c8b-8d71-19b549fabb25"
+        },
+        {
+            "Type": "Flow",
+            "ProjectRelativePath": "RoundOrchestrator/project.uiproj",
+            "Id": "1f233bc5-fdf4-485e-8b22-031668cd06a5"
+        },
+        {
+            "Type": "Agent",
+            "ProjectRelativePath": "RefereeAgent/project.uiproj",
+            "Id": "d142cc68-7003-47a6-9eb8-93cf48f49956"
+        }
+    ]
+}
