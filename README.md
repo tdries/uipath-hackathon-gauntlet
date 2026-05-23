@@ -1,13 +1,19 @@
 <p align="center">
-  <img src="gauntlet_logo.png" alt="Gauntlet logo" width="200" />
+  <img src="gauntlet-logo.png" alt="Gauntlet Adversarial Test Cloud" width="640" />
 </p>
 
-<h1 align="center">Gauntlet — Go safe or go home</h1>
-
-<p align="center"><strong>Adversarial red-team arena for UiPath agents.</strong></p>
+<p align="center"><strong>Adversarial red-team arena for UiPath agents.</strong> Go safe or go home.</p>
 
 <p align="center">
-  Submission for <a href="https://uipath-agenthack.devpost.com">UiPath AgentHack 2026</a> — <strong>Track 3 (UiPath Test Cloud)</strong>.
+  Submission for <a href="https://uipath-agenthack.devpost.com">UiPath AgentHack 2026</a>, <strong>Track 3 (UiPath Test Cloud)</strong>.
+</p>
+
+<p align="center">
+  <a href="https://youtu.be/1q9W5SC_fxA">
+    <img src="https://img.youtube.com/vi/1q9W5SC_fxA/maxresdefault.jpg" alt="Watch the demo on YouTube" width="600" />
+  </a>
+  <br />
+  <a href="https://youtu.be/1q9W5SC_fxA"><strong>▶ Watch the demo on YouTube</strong></a>
 </p>
 
 ---
@@ -39,9 +45,9 @@ Tenant status at a glance. Robustness score, top critical findings, recent fight
 
 ![Dashboard](docs/screenshots/01-dashboard.png)
 
-### Coach Lab — invent a new attack persona
+### Coach Lab. Invent a new attack persona
 
-The Coach picks the persona × posture combination with the highest expected reward (Thompson sampling), or asks Claude Opus to invent a new one. Risk-weighted coverage table shows exactly where Blue is weakest.
+The Coach picks the persona × posture combination with the highest expected reward (Thompson sampling), or asks Claude Opus to invent a new one. The risk-weighted coverage table shows exactly where Blue is weakest.
 
 ![Coach Lab](docs/screenshots/02-coach-lab.png)
 
@@ -53,7 +59,7 @@ Single fight or batch of up to 10. Pick the Red persona, the scenario, and the B
 
 ### Fix Lab
 
-Open any losing fight, read the Fix Recommender's patch proposal (root cause + suggested system-prompt patch + regression test), file it to **UiPath Action Center** for human approval.
+Open any losing fight, read the Fix Recommender's patch proposal (root cause, suggested system-prompt patch, regression test), file it to **UiPath Action Center** for human approval.
 
 ![Fix Lab](docs/screenshots/04-fix-lab.png)
 
@@ -63,13 +69,13 @@ Persona × posture heatmap, severity trend, fix-recommender pipeline status, per
 
 ![Analytics](docs/screenshots/05-analytics.png)
 
-### Audit — OWASP LLM Top-10 / MITRE ATLAS coverage
+### Audit. OWASP LLM Top-10 / MITRE ATLAS coverage
 
 Every fight is double-tagged. The Audit view answers "what kinds of attacks have we tested for, and how did Blue do?" in a form a compliance officer can read.
 
 ![Audit](docs/screenshots/06-audit.png)
 
-### Logs — every adversarial call
+### Logs. Every adversarial call
 
 Full transcripts, referee verdicts, fix-proposal links. Click any row to drill into the full conversation.
 
@@ -82,8 +88,8 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 | **UiPath Automation Cloud** | Execution and orchestration plane | Tenant: `cloud.uipath.com/thesingularityisnearer/DefaultTenant` |
 | **Maestro Case** (`FightArena`) | Long-running fight orchestration; rounds-as-tasks | [uipath/gauntlet/FightArena/](uipath/gauntlet/FightArena/) |
 | **Maestro Flow** (`RoundOrchestrator`) | Single round end-to-end: Red attack → Blue response → judge → score | [uipath/gauntlet/RoundOrchestrator/](uipath/gauntlet/RoundOrchestrator/) |
-| **Agent Builder** (`MetroBankCSR`) | Blue target — reference customer-service agent (system under test) | [uipath/gauntlet/MetroBankCSR/](uipath/gauntlet/MetroBankCSR/) |
-| **Agent Builder** (`RefereeAgent`) | Judge — scores each round against the rubric | [uipath/gauntlet/RefereeAgent/](uipath/gauntlet/RefereeAgent/) |
+| **Agent Builder** (`MetroBankCSR`) | Blue target. Reference customer-service agent (system under test) | [uipath/gauntlet/MetroBankCSR/](uipath/gauntlet/MetroBankCSR/) |
+| **Agent Builder** (`RefereeAgent`) | Judge. Scores each round against the rubric | [uipath/gauntlet/RefereeAgent/](uipath/gauntlet/RefereeAgent/) |
 | **Coded Agents** (Python, LangGraph + Opus) | Red Coach (`gauntlet coach`), Fix Recommender (`gauntlet fix`) | [src/gauntlet/](src/gauntlet/) |
 | **Coded App** (`gauntletapp`) | Operator surface: Threat Dashboard, Coach Lab, Fix Lab, Analytics, Audit, Logs | [uipath/gauntlet-console/](uipath/gauntlet-console/) |
 | **Test Manager** | Persistent regression set, auto-populated by Coach on winning attacks | Imported via [scripts/import_runs_to_test_manager.py](scripts/import_runs_to_test_manager.py) |
@@ -96,21 +102,21 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 **Both Coded Agents and Low-code Agents.** Gauntlet is deliberately polyglot to prove the arena is framework-neutral.
 
 - **Coded Agents (Python, LangGraph + Claude Opus):**
-  - `gauntlet coach` — adversarial Red Coach with risk-weighted persona selection ([src/gauntlet/coach.py](src/gauntlet/coach.py))
-  - `gauntlet fix` — Fix Recommender ([src/gauntlet/fix.py](src/gauntlet/fix.py))
-  - `gauntlet referee` (local mirror) — judge logic ([src/gauntlet/referee.py](src/gauntlet/referee.py))
+  - `gauntlet coach`. Adversarial Red Coach with risk-weighted persona selection ([src/gauntlet/coach.py](src/gauntlet/coach.py))
+  - `gauntlet fix`. Fix Recommender ([src/gauntlet/fix.py](src/gauntlet/fix.py))
+  - `gauntlet referee` (local mirror). Judge logic ([src/gauntlet/referee.py](src/gauntlet/referee.py))
   - External Blue target reference implementation in LangGraph ([src/gauntlet/blue_team_external.py](src/gauntlet/blue_team_external.py))
 
 - **Low-code Agents (UiPath Agent Builder):**
-  - `MetroBankCSR` — the Blue target (system under test)
-  - `RefereeAgent` — the in-tenant judge
+  - `MetroBankCSR`. The Blue target (system under test)
+  - `RefereeAgent`. The in-tenant judge
 
 - **Low-code Orchestration (UiPath Maestro):**
-  - `FightArena` — Maestro **Case** for long-running fight lifecycle
-  - `RoundOrchestrator` — Maestro **Flow** for per-round execution
+  - `FightArena`. Maestro **Case** for long-running fight lifecycle
+  - `RoundOrchestrator`. Maestro **Flow** for per-round execution
 
 - **Coded App (TypeScript + React):**
-  - `gauntletapp` — the operator surface that ties them all together
+  - `gauntletapp`. The operator surface that ties them all together
 
 ## Setup instructions (for judging)
 
@@ -119,7 +125,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 - UiPath Automation Cloud tenant with **Test Cloud**, **Maestro**, **Agent Builder**, **Action Center**, **Coded Apps**, and **Test Manager** enabled
 - **Node.js 20+**
 - **Python 3.11+**
-- **`uip` CLI 1.0.4+** — `npm i -g @uipath/cli`
+- **`uip` CLI 1.0.4+** (install with `npm i -g @uipath/cli`)
 - **Anthropic API key** (Claude Opus access)
 
 ### 1. Clone and configure
@@ -167,8 +173,8 @@ uip solution deploy --name gauntlet
 This deploys:
 - `FightArena` (Maestro Case)
 - `RoundOrchestrator` (Maestro Flow)
-- `MetroBankCSR` (Agent Builder agent — the Blue target)
-- `RefereeAgent` (Agent Builder agent — the judge)
+- `MetroBankCSR` (Agent Builder agent, the Blue target)
+- `RefereeAgent` (Agent Builder agent, the judge)
 
 ### 5. Deploy the Coded App (`gauntletapp`)
 
@@ -207,15 +213,15 @@ The app falls back to the bundled offline corpus when not authenticated, so judg
 
 ## How it positions
 
-Gauntlet is the **adversarial complement to UiPath Agent Evaluations**. Where Agent Evaluations score your agent against a static rubric, Gauntlet scores it against an opponent that's actively trying to break it — and turns every successful attack into a permanent test case.
+Gauntlet is the **adversarial complement to UiPath Agent Evaluations**. Where Agent Evaluations score your agent against a static rubric, Gauntlet scores it against an opponent that's actively trying to break it, and turns every successful attack into a permanent test case.
 
-Built end-to-end with **Claude Code** as the coding agent — thematically right: an agent building a tool to keep agents honest.
+Built end-to-end with **Claude Code** as the coding agent. Thematically right: an agent building a tool to keep agents honest.
 
 ## Repo layout
 
 ```
 .
-├── src/gauntlet/           Python package — Coach, Fix, Referee, Runner, CLI
+├── src/gauntlet/           Python package (Coach, Fix, Referee, Runner, CLI)
 ├── uipath/
 │   ├── gauntlet/           UiPath solution
 │   │   ├── FightArena/         Maestro Case
@@ -234,4 +240,4 @@ Built end-to-end with **Claude Code** as the coding agent — thematically right
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
