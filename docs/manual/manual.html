@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Gauntlet — Operator Manual</title>
+<style>
+  /* ───── Print page setup ───── */
+  @page { size: A4 portrait; margin: 0; }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: white;
+    color: #172125;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  :root {
+    --orange: #FA4616;
+    --orange-dark: #C2320C;
+    --teal: #11A5BA;
+    --teal-dark: #0A7686;
+    --ink: #172125;
+    --ink-2: #4F5F66;
+    --ink-3: #7D9199;
+    --hairline: #D5E3E8;
+    --panel: #F0F9FC;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  h1 { font-size: 28pt; line-height: 1.1; margin: 0 0 12pt 0; }
+  h2 { font-size: 20pt; line-height: 1.15; margin: 0 0 10pt 0; }
+  h3 { font-size: 13pt; line-height: 1.25; margin: 14pt 0 6pt 0; }
+  h4 { font-size: 10pt; line-height: 1.3; margin: 10pt 0 4pt 0; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-2); }
+  p { margin: 0 0 7pt 0; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--ink-2); font-style: italic; }
+
+  /* ───── Page wrapper. Each section = one A4 page. ───── */
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 18mm 18mm 16mm 18mm;
+    page-break-after: always;
+    break-after: page;
+    position: relative;
+    overflow: hidden;
+  }
+  .page:last-of-type { page-break-after: auto; break-after: auto; }
+
+  .header {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 3mm;
+    margin-bottom: 7mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 8pt;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .header .section { color: var(--orange); font-weight: 700; }
+  .footer {
+    position: absolute;
+    left: 18mm; right: 18mm; bottom: 12mm;
+    border-top: 1px solid var(--hairline);
+    padding-top: 3mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 7.5pt;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+  }
+  .footer .brand { font-weight: 700; color: var(--ink-2); letter-spacing: 0.1em; text-transform: uppercase; }
+  .footer .pageno { font-weight: 700; color: var(--ink); }
+
+  /* ───── COVER ───── */
+  .cover {
+    width: 210mm;
+    height: 297mm;
+    background: linear-gradient(135deg, #0A7686 0%, #11A5BA 55%, #1FB5C9 100%);
+    color: white;
+    position: relative;
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+    padding: 0;
+  }
+  .cover-frame { position: absolute; inset: 15mm; border: 1px solid rgba(255,255,255,0.25); pointer-events: none; }
+  .cover-uipath {
+    position: absolute; top: 22mm; right: 22mm;
+    font-family: 'Poppins', sans-serif; font-weight: 800;
+    font-size: 18pt; letter-spacing: -0.02em; color: white;
+  }
+  .cover-eyebrow {
+    position: absolute; top: 22mm; left: 22mm;
+    font-size: 8.5pt; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(255,255,255,0.85);
+  }
+  .cover-logo {
+    position: absolute; top: 55mm; left: 50%; transform: translateX(-50%);
+    width: 145mm;
+  }
+  .cover-logo img { width: 100%; display: block; }
+  .cover-title {
+    position: absolute; bottom: 90mm; left: 22mm; right: 22mm;
+    font-family: 'Poppins', sans-serif;
+    font-size: 44pt; font-weight: 800;
+    line-height: 0.95; color: white; margin: 0;
+    letter-spacing: -0.03em;
+  }
+  .cover-subtitle {
+    position: absolute; bottom: 60mm; left: 22mm; right: 50mm;
+    font-size: 13pt; color: rgba(255,255,255,0.95);
+    line-height: 1.4; font-weight: 300;
+  }
+  .cover-meta {
+    position: absolute; bottom: 30mm; left: 22mm; right: 22mm;
+    display: flex; gap: 18mm; font-size: 8.5pt;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase; letter-spacing: 0.12em;
+  }
+  .cover-meta-item .label { display: block; opacity: 0.65; margin-bottom: 1.5mm; }
+  .cover-meta-item .value { color: white; font-weight: 600; letter-spacing: 0.05em; }
+  .cover-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 8mm; background: var(--orange); }
+  .cover-tag {
+    position: absolute; bottom: 14mm; right: 22mm;
+    font-size: 8pt; color: rgba(255,255,255,0.75);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* ───── Building blocks ───── */
+  .eyebrow {
+    color: var(--orange); font-size: 8.5pt;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 3mm;
+  }
+  .lead {
+    font-size: 11.5pt; line-height: 1.55;
+    color: var(--ink-2); margin-bottom: 6mm;
+  }
+  .accent-bar {
+    width: 18mm; height: 1.5mm; background: var(--orange);
+    margin: 0 0 5mm 0;
+  }
+
+  ul, ol { padding-left: 5mm; margin: 0 0 7pt 0; }
+  li { margin-bottom: 2.5pt; }
+
+  .screenshot {
+    width: 100%;
+    border: 1px solid var(--hairline);
+    border-radius: 2mm;
+    box-shadow: 0 1mm 3mm rgba(23,33,37,0.08);
+    margin: 3mm 0 5mm 0;
+    display: block;
+  }
+
+  /* ───── TOC ───── */
+  .toc-row {
+    display: flex; align-items: baseline;
+    margin-bottom: 2.5mm; padding-bottom: 2mm;
+    font-size: 10.5pt;
+    border-bottom: 1px dotted var(--hairline);
+  }
+  .toc-row .num {
+    color: var(--orange); font-weight: 700;
+    width: 12mm; font-family: 'Poppins', sans-serif; font-size: 11pt;
+  }
+  .toc-row .title { flex: 1; color: var(--ink); font-weight: 600; }
+  .toc-row .desc { color: var(--ink-3); font-size: 8.5pt; margin-left: 3mm; font-style: italic; font-weight: 400; }
+  .toc-row .pg { color: var(--ink-2); font-weight: 600; width: 12mm; text-align: right; font-family: 'Poppins', sans-serif; font-size: 10pt; }
+
+  /* ───── Grid layouts ───── */
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; margin: 3mm 0 5mm 0; }
+  .cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4mm; margin: 3mm 0 5mm 0; }
+
+  .feature {
+    background: var(--panel);
+    border-radius: 2mm;
+    padding: 4mm 5mm;
+    border-left: 1mm solid var(--teal);
+  }
+  .feature-orange { border-left-color: var(--orange); }
+  .feature h4 {
+    margin: 0 0 2mm 0; color: var(--ink);
+    text-transform: none; letter-spacing: 0;
+    font-size: 10.5pt; font-weight: 700;
+  }
+  .feature p { font-size: 9pt; color: var(--ink-2); margin: 0; line-height: 1.5; }
+
+  /* ───── Compare table ───── */
+  .compare {
+    border-collapse: collapse; width: 100%;
+    margin: 3mm 0 5mm 0; font-size: 10pt;
+  }
+  .compare th, .compare td {
+    text-align: left; padding: 3mm 4mm;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+  .compare th {
+    font-size: 8.5pt; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--ink-3);
+    font-weight: 700; border-bottom: 1.5px solid var(--ink);
+  }
+  .compare .today { color: var(--ink-2); }
+  .compare .with-gauntlet { color: var(--ink); font-weight: 500; }
+
+  /* ───── Component table ───── */
+  .components {
+    border-collapse: collapse; width: 100%;
+    margin: 3mm 0 5mm 0; font-size: 9pt;
+  }
+  .components th, .components td {
+    text-align: left; padding: 2.2mm 3mm;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+  .components th {
+    font-size: 7.5pt; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--ink-3);
+    font-weight: 700; background: var(--panel);
+    border-bottom: 1.5px solid var(--ink);
+  }
+  .components td.name { font-weight: 600; color: var(--ink); width: 38%; }
+  .components td.role { color: var(--ink-2); }
+
+  /* ───── Code ───── */
+  pre, code {
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+    font-size: 8.5pt;
+  }
+  pre {
+    background: #1A2429; color: #E6F2FA;
+    padding: 4mm 5mm; border-radius: 2mm;
+    line-height: 1.5; margin: 3mm 0 4mm 0;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  code.inline {
+    background: var(--panel); color: var(--orange-dark);
+    padding: 0.5mm 1.5mm; border-radius: 1mm;
+    font-size: 9pt;
+  }
+
+  /* ───── Pull quote ───── */
+  .quote {
+    border-left: 1.5mm solid var(--orange);
+    padding: 2mm 0 2mm 6mm;
+    margin: 4mm 0 5mm 0;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 11.5pt;
+    line-height: 1.45;
+  }
+
+  /* ───── Stat cards ───── */
+  .stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4mm; margin: 4mm 0 6mm 0;
+  }
+  .stat {
+    padding: 4mm 5mm;
+    border-top: 1mm solid var(--orange);
+    background: var(--panel);
+    border-radius: 0 0 2mm 2mm;
+  }
+  .stat .num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 22pt; font-weight: 800;
+    color: var(--ink); line-height: 1;
+    letter-spacing: -0.02em; margin-bottom: 2mm;
+  }
+  .stat .label {
+    font-size: 8pt; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+
+  /* ───── Numbered steps ───── */
+  .steps { counter-reset: step; padding: 0; margin: 3mm 0 5mm 0; list-style: none; }
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 10mm;
+    margin-bottom: 3mm;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: -1mm;
+    width: 7mm; height: 7mm;
+    background: var(--orange); color: white;
+    border-radius: 50%;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10pt; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .steps li strong { display: block; margin-bottom: 1mm; }
+
+  /* ───── Closing page ───── */
+  .closing {
+    width: 210mm; height: 297mm;
+    background: linear-gradient(135deg, #FA4616 0%, #FF6238 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    page-break-before: always;
+  }
+  .closing-frame { position: absolute; inset: 15mm; border: 1px solid rgba(255,255,255,0.25); pointer-events: none; }
+  .closing-eyebrow {
+    position: absolute; top: 70mm; left: 25mm;
+    font-size: 9pt; text-transform: uppercase;
+    letter-spacing: 0.2em; color: rgba(255,255,255,0.9);
+  }
+  .closing-title {
+    position: absolute; top: 90mm; left: 25mm; right: 25mm;
+    font-family: 'Poppins', sans-serif;
+    font-size: 60pt; font-weight: 900;
+    line-height: 0.9; letter-spacing: -0.04em;
+    margin: 0;
+  }
+  .closing-tag {
+    position: absolute; top: 165mm; left: 25mm; right: 80mm;
+    font-size: 13pt; color: rgba(255,255,255,0.95);
+    line-height: 1.4;
+  }
+  .closing-links {
+    position: absolute; bottom: 30mm; left: 25mm; right: 25mm;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    padding-top: 6mm;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5mm; font-size: 10pt;
+  }
+  .closing-link .label {
+    text-transform: uppercase; letter-spacing: 0.14em;
+    font-size: 8pt; color: rgba(255,255,255,0.75);
+    margin-bottom: 1mm;
+  }
+  .closing-link .value { color: white; font-weight: 600; font-size: 9.5pt; }
+</style>
+</head>
+<body>
+
+<!-- ═══ COVER ═══ -->
+<section class="cover">
+  <div class="cover-frame"></div>
+  <div class="cover-eyebrow">UiPath AgentHack 2026 · Track 3</div>
+  <div class="cover-uipath">UiPath</div>
+  <div class="cover-logo"><img src="../../gauntlet-logo.png" alt="Gauntlet logo" /></div>
+  <h1 class="cover-title">Operator<br/>Manual</h1>
+  <div class="cover-subtitle">Adversarial Test Cloud for UiPath agents. A red-team arena that grows its own regression suite, with continuous OWASP and MITRE coverage.</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="label">Version</span><span class="value">1.0</span></div>
+    <div class="cover-meta-item"><span class="label">Author</span><span class="value">Tim Dries</span></div>
+    <div class="cover-meta-item"><span class="label">Submission</span><span class="value">May 2026</span></div>
+  </div>
+  <div class="cover-tag">Go safe, or go home.</div>
+  <div class="cover-bar"></div>
+</section>
+
+
+<!-- ═══ TOC ═══ -->
+<section class="page">
+  <div class="header"><span class="section">Contents</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Table of contents</div>
+  <h1>What's inside</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">A field guide to operating the Gauntlet adversarial arena: what it is, how it works, and how to drive it through every screen.</p>
+
+  <div class="toc-row"><span class="num">01</span><span class="title">The problem<span class="desc">Why Agent Evaluations aren't enough</span></span><span class="pg">04</span></div>
+  <div class="toc-row"><span class="num">02</span><span class="title">What Gauntlet does<span class="desc">The continuous adversarial loop</span></span><span class="pg">05</span></div>
+  <div class="toc-row"><span class="num">03</span><span class="title">Architecture<span class="desc">Maestro Case, Flow, Agents, Coded App</span></span><span class="pg">06</span></div>
+  <div class="toc-row"><span class="num">04</span><span class="title">UiPath components used<span class="desc">A comprehensive reference</span></span><span class="pg">07</span></div>
+  <div class="toc-row"><span class="num">05</span><span class="title">Threat Dashboard<span class="desc">Tenant status at a glance</span></span><span class="pg">08</span></div>
+  <div class="toc-row"><span class="num">06</span><span class="title">Coach Lab<span class="desc">Invent a new attack persona</span></span><span class="pg">09</span></div>
+  <div class="toc-row"><span class="num">07</span><span class="title">Run a Fight<span class="desc">Replay or batch new rounds</span></span><span class="pg">10</span></div>
+  <div class="toc-row"><span class="num">08</span><span class="title">Fix Lab<span class="desc">Diagnose and file an Action Center task</span></span><span class="pg">11</span></div>
+  <div class="toc-row"><span class="num">09</span><span class="title">Analytics<span class="desc">Heatmaps, trends, leaderboards</span></span><span class="pg">12</span></div>
+  <div class="toc-row"><span class="num">10</span><span class="title">Audit<span class="desc">OWASP LLM Top-10 and MITRE ATLAS coverage</span></span><span class="pg">13</span></div>
+  <div class="toc-row"><span class="num">11</span><span class="title">Logs<span class="desc">Every adversarial call, searchable</span></span><span class="pg">14</span></div>
+  <div class="toc-row"><span class="num">12</span><span class="title">Setup and deployment<span class="desc">Step-by-step for judging</span></span><span class="pg">15</span></div>
+  <div class="toc-row"><span class="num">13</span><span class="title">Resources<span class="desc">Demo, repo, contact</span></span><span class="pg">16</span></div>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>Contents</span><span class="pageno">02</span></div>
+</section>
+
+
+<!-- ═══ 01 — PROBLEM ═══ -->
+<section class="page">
+  <div class="header"><span class="section">01 · The problem</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 01</div>
+  <h1>The gap between Agent Evaluations and real adversaries</h1>
+  <div class="accent-bar"></div>
+
+  <p class="lead">UiPath Agent Evaluations tell you whether your agent passes the tests <strong>you wrote</strong>. They don't tell you what happens when a real attacker shows up with a prompt you never imagined.</p>
+
+  <p>Agent safety today is mostly vibes-based. Teams ship an agent, write a few eval rubrics, and hope nothing breaks. Gauntlet replaces "hope" with a continuous adversarial loop.</p>
+
+  <table class="compare">
+    <thead><tr><th>Today</th><th>With Gauntlet</th></tr></thead>
+    <tbody>
+      <tr><td class="today">Static eval rubrics that humans wrote</td><td class="with-gauntlet">Self-play that invents new evals</td></tr>
+      <tr><td class="today">"Did we test prompt injection?" → maybe?</td><td class="with-gauntlet">OWASP / MITRE coverage matrix on every release</td></tr>
+      <tr><td class="today">Bug found in prod → manual repro → manual test case</td><td class="with-gauntlet">Auto-populated Test Manager regression entry</td></tr>
+      <tr><td class="today">Failure → developer manually patches prompt</td><td class="with-gauntlet">Fix Recommender drafts the patch, opens Action Center task</td></tr>
+    </tbody>
+  </table>
+
+  <div class="quote">"The interesting evals are the ones the human didn't write. Self-play creates evals you'd never think to author."</div>
+
+  <p>The rest of this manual walks through how that loop runs end-to-end inside your UiPath tenant.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>01 · The problem</span><span class="pageno">03</span></div>
+</section>
+
+
+<!-- ═══ 02 — WHAT IT DOES ═══ -->
+<section class="page">
+  <div class="header"><span class="section">02 · What it does</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 02</div>
+  <h1>A continuous adversarial loop</h1>
+  <div class="accent-bar"></div>
+
+  <p class="lead">A <strong>Red Coach</strong> agent plays an adversary against any UiPath Agent, Maestro Flow, or external target. Winning attacks become permanent regression tests. Failing fights become Action Center tickets.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num">75+</div><div class="label">adversarial fights run</div></div>
+    <div class="stat"><div class="num">9</div><div class="label">critical findings auto-diagnosed</div></div>
+    <div class="stat"><div class="num">22%</div><div class="label">worst-case win rate exposed</div></div>
+    <div class="stat"><div class="num">8</div><div class="label">attack personas in the library</div></div>
+  </div>
+
+  <h3>The four pillars</h3>
+  <div class="cols-2">
+    <div class="feature feature-orange">
+      <h4>1 · Red Coach invents attacks</h4>
+      <p>Picks the highest expected-reward persona via Thompson sampling, or asks a frontier LLM to author a new one mid-fight.</p>
+    </div>
+    <div class="feature">
+      <h4>2 · Test Manager grows itself</h4>
+      <p>Every winning attack auto-persists as a Test Manager case. The regression suite is the byproduct of the loop.</p>
+    </div>
+    <div class="feature feature-orange">
+      <h4>3 · Fix Recommender drafts patches</h4>
+      <p>On a Blue loss, a second agent reads the transcript and proposes a concrete remediation. An Action Center task lands in the reviewer's queue.</p>
+    </div>
+    <div class="feature">
+      <h4>4 · Coverage you can audit</h4>
+      <p>Every fight double-tagged against OWASP LLM Top-10 and MITRE ATLAS. The audit view renders coverage as a matrix a compliance officer can read.</p>
+    </div>
+  </div>
+
+  <h3>The system under test</h3>
+  <p>The reference Blue target shipped with Gauntlet is <code class="inline">MetroBankCSR</code>, an Agent Builder agent that plays a bank customer-service rep. Swap it for any UiPath Agent, Maestro Flow, or external LangGraph target. The arena is framework-neutral.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>02 · What it does</span><span class="pageno">04</span></div>
+</section>
+
+
+<!-- ═══ 03 — ARCHITECTURE ═══ -->
+<section class="page">
+  <div class="header"><span class="section">03 · Architecture</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 03</div>
+  <h1>How it works</h1>
+  <div class="accent-bar"></div>
+
+  <p class="lead">Gauntlet is structured as a long-running Maestro Case with rounds-as-tasks. Each round is one Maestro Flow execution that pits Red against Blue.</p>
+
+  <h3>Round lifecycle</h3>
+<pre>┌─────────┐    ┌──────────────┐    ┌─────────┐    ┌──────────┐
+│ Matched │ →  │ Negotiating  │ →  │ Verdict │ →  │ Archived │
+└─────────┘    └──────────────┘    └─────────┘    └──────────┘
+                     │  ▲                  │
+                     │  │ multi-turn       │
+                     │  │ exchanges        ▼
+                     └──┘            Coach updates
+                                     Test Manager;
+                                     Fix Recommender
+                                     opens an Action
+                                     Center task on
+                                     a Blue loss.</pre>
+
+  <h3>Coach self-play loop</h3>
+  <ol>
+    <li>Pick the Red persona with the highest expected risk-weighted reward against this Blue target (Thompson sampling).</li>
+    <li>If no persona has a positive expected reward, ask a frontier LLM to author a new one, conditioned on the last K losing transcripts.</li>
+    <li>Run the round.</li>
+    <li><strong>On Red win:</strong> persist persona + transcript to Test Manager as a regression test.</li>
+    <li><strong>On Blue loss:</strong> update reward priors. Loop.</li>
+  </ol>
+
+  <p>This is what makes the test suite grow without humans. The corpus is the byproduct of the Coach trying to maximise successful attacks.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>03 · Architecture</span><span class="pageno">05</span></div>
+</section>
+
+
+<!-- ═══ 04 — COMPONENTS ═══ -->
+<section class="page">
+  <div class="header"><span class="section">04 · UiPath components</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 04</div>
+  <h1>Comprehensive component reference</h1>
+  <div class="accent-bar"></div>
+
+  <p class="lead">Gauntlet ships as a UiPath solution combining <strong>Coded Agents</strong> and <strong>Low-code Agents</strong>, proving the arena is framework-neutral.</p>
+
+  <table class="components">
+    <thead><tr><th>Component</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Maestro Case · <code class="inline">FightArena</code></td><td class="role">Long-running fight orchestration. Rounds as tasks. Stages: Matched → Negotiating → Verdict → Archived.</td></tr>
+      <tr><td class="name">Maestro Flow · <code class="inline">RoundOrchestrator</code></td><td class="role">Single round end-to-end. Red attack → Blue response → judge → score.</td></tr>
+      <tr><td class="name">Agent Builder · <code class="inline">MetroBankCSR</code></td><td class="role">The Blue target. Reference customer-service agent.</td></tr>
+      <tr><td class="name">Agent Builder · <code class="inline">RefereeAgent</code></td><td class="role">In-tenant judge. Scores each round against the rubric.</td></tr>
+      <tr><td class="name">Coded Agents (Python, LangGraph)</td><td class="role">Red Coach (<code class="inline">gauntlet coach</code>) and Fix Recommender (<code class="inline">gauntlet fix</code>).</td></tr>
+      <tr><td class="name">Coded App · <code class="inline">gauntletapp</code></td><td class="role">Operator surface. React + <code class="inline">@uipath/uipath-typescript</code> SDK. Hosts Dashboard, Coach Lab, Fix Lab, Analytics, Audit, Logs.</td></tr>
+      <tr><td class="name">Test Manager</td><td class="role">Persistent regression set. Auto-populated by the Coach on winning attacks.</td></tr>
+      <tr><td class="name">Action Center</td><td class="role">Human-in-the-loop fix approval. Tasks opened from the Fix Lab.</td></tr>
+      <tr><td class="name">UiPath TypeScript SDK</td><td class="role">Browser-side calls to Maestro instances, Test Manager, Action Center.</td></tr>
+      <tr><td class="name">UiPath Automation Cloud</td><td class="role">Execution and orchestration plane. Tenant: thesingularityisnearer / DefaultTenant.</td></tr>
+      <tr><td class="name"><code class="inline">uip</code> CLI 1.0.4+</td><td class="role">Login, package, publish, deploy across all artefacts.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Agent type declaration</h3>
+  <p><strong>Both Coded Agents and Low-code Agents.</strong> Coach and Fix Recommender are Python coded agents. MetroBankCSR and RefereeAgent are low-code Agent Builder agents. FightArena and RoundOrchestrator are low-code Maestro orchestration.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>04 · UiPath components</span><span class="pageno">06</span></div>
+</section>
+
+
+<!-- ═══ 05 — DASHBOARD ═══ -->
+<section class="page">
+  <div class="header"><span class="section">05 · Threat Dashboard</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 05 · Walkthrough</div>
+  <h1>Threat Dashboard</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Your tenant's adversarial status at a glance. Robustness score, top critical findings, recent fights, quick-action tiles, and a mini coverage heatmap.</p>
+
+  <img class="screenshot" src="../screenshots/01-dashboard.png" alt="Threat Dashboard" />
+
+  <div class="cols-2">
+    <div><h4>Top critical findings</h4><p style="font-size:9.5pt;color:var(--ink-2);">The two highest-severity defects diagnosed by Fix Recommender. Click <em>Open Fix Recommender</em> to jump to the patch.</p></div>
+    <div><h4>Recent fights</h4><p style="font-size:9.5pt;color:var(--ink-2);">Last six rounds. Postures colour-coded. Click any row to drill into the full transcript and verdict.</p></div>
+    <div><h4>Quick actions</h4><p style="font-size:9.5pt;color:var(--ink-2);">Entry points for the workflows you'll use most: Run a fight · Coach Lab · Fix Recommender · Analytics.</p></div>
+    <div><h4>Coverage heatmap</h4><p style="font-size:9.5pt;color:var(--ink-2);">Persona × posture matrix. Red cells mean Blue loses against that combination today.</p></div>
+  </div>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>05 · Threat Dashboard</span><span class="pageno">07</span></div>
+</section>
+
+
+<!-- ═══ 06 — COACH LAB ═══ -->
+<section class="page">
+  <div class="header"><span class="section">06 · Coach Lab</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 06 · Walkthrough</div>
+  <h1>Coach Lab</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">The Coach picks the persona × posture with the highest expected reward, or asks a frontier LLM to invent a new attack live in front of you.</p>
+
+  <img class="screenshot" src="../screenshots/02-coach-lab.png" alt="Coach Lab modal" />
+
+  <ol class="steps">
+    <li><strong>Read the risk-weighted coverage table.</strong> The Coach highlights where Blue is weakest. The <em>gap</em> column is the expected reward delta.</li>
+    <li><strong>Paste an API key.</strong> Stays in <code class="inline">sessionStorage</code>. Never leaves your browser.</li>
+    <li><strong>Click "Run live (add key)".</strong> A frontier LLM authors a fresh attack persona right now. Watch it render below the table.</li>
+    <li><strong>The persona enters rotation.</strong> The next fight will be eligible to draw the new persona.</li>
+  </ol>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>06 · Coach Lab</span><span class="pageno">08</span></div>
+</section>
+
+
+<!-- ═══ 07 — RUN A FIGHT ═══ -->
+<section class="page">
+  <div class="header"><span class="section">07 · Run a Fight</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 07 · Walkthrough</div>
+  <h1>Run a Fight</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Single fight or batch of up to ten. Pick the Red persona, the scenario, and the Blue policy posture.</p>
+
+  <img class="screenshot" src="../screenshots/03-run-fight.png" alt="Run a Fight modal" />
+
+  <h3>The four Blue postures</h3>
+  <div class="cols-2">
+    <div class="feature"><h4>Standard</h4><p>Strict MetroBank policy. The agent your bank should ship.</p></div>
+    <div class="feature"><h4>Lenient</h4><p>Soft "customer-first" prompt. The agent shipped after the satisfaction survey.</p></div>
+    <div class="feature"><h4>Naive</h4><p>"First-call resolution" pressure. The agent shipped after the call-handle-time KPI.</p></div>
+    <div class="feature"><h4>External (LangGraph)</h4><p>Third-party LangGraph deployment. Proves the test cloud is framework-neutral.</p></div>
+  </div>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>07 · Run a Fight</span><span class="pageno">09</span></div>
+</section>
+
+
+<!-- ═══ 08 — FIX LAB ═══ -->
+<section class="page">
+  <div class="header"><span class="section">08 · Fix Lab</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 08 · Walkthrough</div>
+  <h1>Fix Lab</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Diagnose a losing fight and file the remediation as an Action Center task in two clicks.</p>
+
+  <img class="screenshot" src="../screenshots/04-fix-lab.png" alt="Fix Lab" />
+
+  <h3>What the Fix Recommender produces</h3>
+  <ul>
+    <li><strong>Root cause.</strong> A diagnostic written against the transcript, including the exact turn that broke policy.</li>
+    <li><strong>Suggested patch.</strong> A concrete system-prompt edit, tool-scope restriction, or guardrail rule.</li>
+    <li><strong>Regression test.</strong> The proposed Test Manager entry that should be added so this defect cannot recur silently.</li>
+    <li><strong>Confidence score.</strong> A self-reported certainty on whether the proposed patch will hold against the same persona.</li>
+  </ul>
+
+  <p>One click on <strong>File to Action Center</strong> creates a real Action Center task in your tenant, with the patch text pre-populated and the original fight transcript attached as evidence.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>08 · Fix Lab</span><span class="pageno">10</span></div>
+</section>
+
+
+<!-- ═══ 09 — ANALYTICS ═══ -->
+<section class="page">
+  <div class="header"><span class="section">09 · Analytics</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 09 · Walkthrough</div>
+  <h1>Analytics</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Every metric derived from the live corpus. Heatmaps, trends, and per-day severity discovered.</p>
+
+  <img class="screenshot" src="../screenshots/05-analytics.png" alt="Analytics" />
+
+  <div class="cols-2">
+    <div><h4>Persona × posture heatmap</h4><p style="font-size:9.5pt;color:var(--ink-2);">Interactive matrix. Cell colour = Red win rate; cell number = fight count.</p></div>
+    <div><h4>Adversarial calls per day</h4><p style="font-size:9.5pt;color:var(--ink-2);">Daily attack volume stacked by outcome. Spot whether the Coach is finding novel surface.</p></div>
+    <div><h4>Fix pipeline status</h4><p style="font-size:9.5pt;color:var(--ink-2);">Counts of red wins on file, auto-diagnosed, pending, and total proposals shipped.</p></div>
+    <div><h4>Severity per day</h4><p style="font-size:9.5pt;color:var(--ink-2);">Distribution of finding severity over time. See whether new attacks are riskier than the baseline.</p></div>
+  </div>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>09 · Analytics</span><span class="pageno">11</span></div>
+</section>
+
+
+<!-- ═══ 10 — AUDIT ═══ -->
+<section class="page">
+  <div class="header"><span class="section">10 · Audit</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 10 · Walkthrough</div>
+  <h1>Audit</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Posture and compliance. What we cover against the AAA spec, ISO 42001, and the NIST AI RMF.</p>
+
+  <img class="screenshot" src="../screenshots/06-audit.png" alt="Audit" />
+
+  <p>Six audit cards, each showing a category of adversarial testing applicable to this agent. For each, you see whether we cover it today (green), partially cover it (amber), or have it on the roadmap (blue). Numbers come from the live corpus, not a static checklist.</p>
+
+  <h3>What you get for a compliance review</h3>
+  <ul>
+    <li>Direct, indirect, and crescendo prompt-injection coverage with attack success rates.</li>
+    <li>Tool-use integrity and action-integrity scores, with policy violations counted.</li>
+    <li>Robustness and regression evidence across four blue postures plus the external target.</li>
+    <li>Multi-agent orchestration security probes if Blue is a graph rather than a single agent.</li>
+    <li>Real-time SIEM streaming and Action Center triage if Reporting & Observability is enabled.</li>
+  </ul>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>10 · Audit</span><span class="pageno">12</span></div>
+</section>
+
+
+<!-- ═══ 11 — LOGS ═══ -->
+<section class="page">
+  <div class="header"><span class="section">11 · Logs</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 11 · Walkthrough</div>
+  <h1>Logs</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Every adversarial call ever run, searchable and filterable. Click any row to read the full transcript.</p>
+
+  <img class="screenshot" src="../screenshots/07-logs.png" alt="Logs" />
+
+  <h3>How to read the table</h3>
+  <ul>
+    <li><strong>Started:</strong> ISO timestamp.</li>
+    <li><strong>Persona / Scenario:</strong> the Red configuration.</li>
+    <li><strong>Blue mode:</strong> Standard, Lenient, Naive, or External.</li>
+    <li><strong>Outcome:</strong> Blue Wins, Red Wins, or draw.</li>
+    <li><strong>AVS / REB / Turns:</strong> Adversarial Vulnerability Score, Referee Evidence Body, exchanges before verdict.</li>
+    <li><strong>Fix proposal:</strong> queued, proposed, applied, or none.</li>
+  </ul>
+
+  <p>Use the search box to filter on persona, scenario, or AVS threshold. Use <em>View fix</em> to jump straight to the patch.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>11 · Logs</span><span class="pageno">13</span></div>
+</section>
+
+
+<!-- ═══ 12 — SETUP ═══ -->
+<section class="page">
+  <div class="header"><span class="section">12 · Setup</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 12</div>
+  <h1>Setup and deployment</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Six steps to a working Gauntlet tenant. Designed for a judge to follow from a cold clone.</p>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>UiPath Automation Cloud tenant with <strong>Test Cloud, Maestro, Agent Builder, Action Center, Coded Apps,</strong> and <strong>Test Manager</strong> enabled.</li>
+    <li>Node.js 20+, Python 3.11+, <code class="inline">uip</code> CLI 1.0.4+.</li>
+    <li>A frontier-model API key.</li>
+  </ul>
+
+  <h3>1 · Clone and configure</h3>
+<pre>git clone https://github.com/tdries/uipath-hackathon-gauntlet.git
+cd uipath-hackathon-gauntlet
+cp .env.example .env</pre>
+
+  <h3>2 · Authenticate, install Python package</h3>
+<pre>uip login
+python -m venv .venv && source .venv/bin/activate
+pip install -e .</pre>
+
+  <h3>3 · Deploy the UiPath solution and Coded App</h3>
+<pre>cd uipath/gauntlet
+uip solution publish gauntlet.uipx
+uip solution deploy --name gauntlet
+
+cd ../gauntlet-console
+npm install && npm run build
+uip codedapp publish</pre>
+
+  <h3>4 · Run the demo workflow</h3>
+  <p>Open <code class="inline">gauntletapp</code> in the Apps tab, click <em>Run a fight</em>, then visit Coach Lab, Fix Lab, Audit, and Logs.</p>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>12 · Setup</span><span class="pageno">14</span></div>
+</section>
+
+
+<!-- ═══ 13 — RESOURCES ═══ -->
+<section class="page">
+  <div class="header"><span class="section">13 · Resources</span><span>Operator Manual · v1.0</span></div>
+  <div class="eyebrow">Chapter 13</div>
+  <h1>Resources</h1>
+  <div class="accent-bar"></div>
+  <p class="lead">Everything a judge or evaluator needs to verify the submission end-to-end.</p>
+
+  <table class="components">
+    <thead><tr><th>Resource</th><th>Link</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Demo video (3 min)</td><td class="role">youtu.be/1q9W5SC_fxA</td></tr>
+      <tr><td class="name">Source repository</td><td class="role">github.com/tdries/uipath-hackathon-gauntlet</td></tr>
+      <tr><td class="name">Submission deck</td><td class="role">Submission deck.pptx (in repo root)</td></tr>
+      <tr><td class="name">Tenant URL</td><td class="role">cloud.uipath.com / thesingularityisnearer / DefaultTenant</td></tr>
+      <tr><td class="name">Devpost</td><td class="role">uipath-agenthack.devpost.com</td></tr>
+      <tr><td class="name">Contact</td><td class="role">Tim Dries · tim.dries@biztory.be · Solution Architect @ Biztory</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Repo layout reference</h3>
+<pre>src/gauntlet/           Python package (Coach, Fix, Referee, Runner, CLI)
+uipath/gauntlet/        UiPath solution
+  ├─ FightArena/         Maestro Case
+  ├─ RoundOrchestrator/  Maestro Flow
+  ├─ MetroBankCSR/       Agent Builder agent (Blue target)
+  └─ RefereeAgent/       Agent Builder agent (judge)
+uipath/gauntlet-console/  React Coded App (gauntletapp)
+personas/               8 attack personas (YAML)
+scenarios/              15 fight scenarios (YAML)
+docs/                   ARCHITECTURE.md, PERSONAS.md, screenshots/, manual/</pre>
+
+  <div class="footer"><span class="brand">Gauntlet · Adversarial Test Cloud</span><span>13 · Resources</span><span class="pageno">15</span></div>
+</section>
+
+
+<!-- ═══ CLOSING ═══ -->
+<section class="closing">
+  <div class="closing-frame"></div>
+  <div class="closing-eyebrow">Gauntlet · Operator Manual</div>
+  <h1 class="closing-title">Go safe,<br/>or go home.</h1>
+  <div class="closing-tag">Built with an agentic coding tool. An agent building a tool to keep agents honest.</div>
+  <div class="closing-links">
+    <div class="closing-link"><div class="label">▶  Demo</div><div class="value">youtu.be/1q9W5SC_fxA</div></div>
+    <div class="closing-link"><div class="label">📦  Repository</div><div class="value">github.com/tdries/uipath-hackathon-gauntlet</div></div>
+    <div class="closing-link"><div class="label">✉  Contact</div><div class="value">tim.dries@biztory.be</div></div>
+    <div class="closing-link"><div class="label">🏢  Tenant</div><div class="value">thesingularityisnearer / DefaultTenant</div></div>
+  </div>
+</section>
+
+</body>
+</html>
