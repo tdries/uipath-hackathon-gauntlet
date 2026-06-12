@@ -171,7 +171,7 @@ gauntlet coach --auto-fight
 gauntlet fix runs/20260516-163715-fight-d6c8ae26-fake-ceo-lenient.json
 ```
 
-> No API key handy? The repo already ships 87 recorded fights under [runs/](runs/). Run `gauntlet leaderboard` to summarize them, or open the Coded App offline (see [Local development](#local-development)) to browse every screen without spending a token.
+> No API key handy? The repo already ships 75 recorded fights (9 with fix proposals) under [runs/](runs/). Run `gauntlet leaderboard` to summarize them, or open the Coded App offline (see [Local development](#local-development)) to browse every screen without spending a token.
 
 ### 4. Deploy the UiPath solution
 
@@ -185,7 +185,7 @@ uip solution pack . ./dist -n gauntlet -v 1.0.0
 #    pack prints the exact .zip path it wrote; use that path in the next step
 
 # 2. Publish the packed .zip to the UiPath solution feed
-uip solution publish ./dist/gauntlet.1.0.0.zip
+uip solution publish ./dist/gauntlet_1.0.0.zip
 
 # 3. Deploy it. Creates an Orchestrator folder, provisions resources, and activates
 uip solution deploy run --name gauntlet \
@@ -224,7 +224,7 @@ Once everything is deployed:
 2. On the **Dashboard**, click *Run a fight*. Pick a Red persona (e.g. `aggressive-lawyer`), a scenario, and the Blue posture. Click **Replay this fight**.
 3. Open **Coach Lab** from the sidebar. Paste your LLM API key into the modal (stays in `sessionStorage`, never sent to Gauntlet servers). Click **Run live (add key)**. The Coach invents a new attack persona in front of you.
 4. On the **Defend** tab, open any losing fight. The **Fix Recommender** has already drafted a patch. Click **File to Action Center** to create a real Action Center task in your tenant.
-5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 87 recorded fights.
+5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 75 recorded fights.
 
 ### Local development
 

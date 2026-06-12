@@ -31,10 +31,11 @@ build/
 !.vscode/extensions.json
 .idea/
 
-# Logs and run artifacts
+# Logs and run artifacts (fight corpus in runs/ is tracked; dev debris is not)
 *.log
 logs/
-runs/
+runs/_*
+runs/*.jsonl
 *.replay.json
 
 # OS
