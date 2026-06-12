@@ -95,11 +95,11 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 | **Test Manager** | Persistent regression set, auto-populated by Coach on winning attacks | Imported via [scripts/import_runs_to_test_manager.py](scripts/import_runs_to_test_manager.py) |
 | **Action Center** | Human-in-the-loop fix approval; tasks opened from Fix Lab | Live API call from browser via `@uipath/uipath-typescript` |
 | **UiPath TypeScript SDK** (`@uipath/uipath-typescript`) | Browser-side calls from Coded App to Maestro instances, Test Manager, Action Center | [uipath/gauntlet-console/src/lib/uipath.ts](uipath/gauntlet-console/src/lib/uipath.ts) |
-| **`uip` CLI 1.0.4+** | Login, package, publish, deploy across all artifacts | Used in setup steps below |
+| **`uip` CLI** (latest) | Login, pack, publish, deploy across all artifacts | Used in setup steps below |
 
 ## Agent type
 
-**Both Coded Agents and Low-code Agents.** Gauntlet is deliberately polyglot to prove the arena is framework-neutral.
+**A combination. Gauntlet uses both coded agents and low-code agents from Agent Builder.** It is deliberately polyglot to prove the arena is framework-neutral.
 
 - **Coded Agents (Python, LangGraph + a frontier LLM):**
   - `gauntlet coach`. Adversarial Red Coach with risk-weighted persona selection ([src/gauntlet/coach.py](src/gauntlet/coach.py))
@@ -125,7 +125,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 - UiPath Automation Cloud tenant with **Test Cloud**, **Maestro**, **Agent Builder**, **Action Center**, **Coded Apps**, and **Test Manager** enabled
 - **Node.js 20+**
 - **Python 3.11+**
-- **`uip` CLI 1.0.4+** (install with `npm i -g @uipath/cli`)
+- **`uip` CLI** (latest; install with `npm i -g @uipath/cli`). The solution `pack` / `deploy run` commands below need a recent build.
 - **LLM API key** (frontier-model access)
 
 ### 1. Clone and configure
@@ -134,8 +134,10 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 git clone https://github.com/tdries/uipath-hackathon-gauntlet.git
 cd uipath-hackathon-gauntlet
 cp .env.example .env
-# Fill in ANTHROPIC_API_KEY and UiPath tenant fields
+# Fill in ANTHROPIC_API_KEY (required)
 ```
+
+Only `ANTHROPIC_API_KEY` is required to run Gauntlet. The other keys in `.env.example` are optional: `OPENAI_API_KEY` powers the optional multi-model bake-off, and `HEYGEN_API_KEY` / `ELEVENLABS_API_KEY` were used only for demo-video production, so leave them blank. The `UIPATH_*` fields are filled automatically by `uip login` in the next step.
 
 ### 2. Authenticate to UiPath
 
@@ -152,22 +154,44 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-This exposes the `gauntlet` CLI:
+This exposes the `gauntlet` CLI. The `fight` / `coach` / `fix` commands make live LLM calls, so they need `ANTHROPIC_API_KEY` set in `.env`:
 ```bash
-gauntlet --help
-gauntlet fight fake-ceo-naive         # replay one fight from the corpus
-gauntlet coach --auto-fight           # let the Coach invent a new attack
-gauntlet fix runs/<fight-id>.json     # generate a fix proposal for a losing fight
+gauntlet --help                       # list every command
+gauntlet personas                     # list the 8 red-team personas
+gauntlet scenarios                    # list the 15 fight scenarios
+
+# Run one live fight: gauntlet fight <persona> --scenario <scenario>
+#   --blue-mode is one of: standard | lenient | naive | external
+gauntlet fight fake-ceo --scenario acme-roofing-bec --blue-mode naive
+
+# Let the Coach read the corpus and invent a brand-new attack persona, then fight it:
+gauntlet coach --auto-fight
+
+# Draft a fix proposal for a losing fight (pass any run file from runs/):
+gauntlet fix runs/20260516-163715-fight-d6c8ae26-fake-ceo-lenient.json
 ```
+
+> No API key handy? The repo already ships 87 recorded fights under [runs/](runs/). Run `gauntlet leaderboard` to summarize them, or open the Coded App offline (see [Local development](#local-development)) to browse every screen without spending a token.
 
 ### 4. Deploy the UiPath solution
 
-The full UiPath solution (Maestro Case + Flow + both Agent Builder agents) lives in [uipath/gauntlet/](uipath/gauntlet/) as a `.uipx` solution package.
+The full UiPath solution (Maestro Case + Flow + both Agent Builder agents) lives in [uipath/gauntlet/](uipath/gauntlet/). That folder holds the solution manifest (`gauntlet.uipx`) and each project. You **pack** the folder into a deployable `.zip`, **publish** the `.zip`, then **deploy** it:
 
 ```bash
 cd uipath/gauntlet
-uip solution publish gauntlet.uipx
-uip solution deploy --name gauntlet
+
+# 1. Pack the solution folder (it contains gauntlet.uipx) into a .zip under ./dist
+uip solution pack . ./dist -n gauntlet -v 1.0.0
+#    pack prints the exact .zip path it wrote; use that path in the next step
+
+# 2. Publish the packed .zip to the UiPath solution feed
+uip solution publish ./dist/gauntlet.1.0.0.zip
+
+# 3. Deploy it. Creates an Orchestrator folder, provisions resources, and activates
+uip solution deploy run --name gauntlet \
+  --package-name gauntlet --package-version 1.0.0 \
+  --folder-name Gauntlet --parent-folder-path Shared
+#    (find published package names/versions with: uip solution packages list)
 ```
 
 This deploys:
@@ -181,11 +205,14 @@ This deploys:
 ```bash
 cd uipath/gauntlet-console
 npm install
-npm run build
-uip codedapp publish
+npm run build                                  # produces dist/
+
+uip codedapp pack dist -n gauntletapp -v 1.0.0 # pack dist/ into a .nupkg
+uip codedapp publish --name gauntletapp        # register the package in your tenant
+uip codedapp deploy --name gauntletapp         # deploy / upgrade the app
 ```
 
-This publishes `gauntletapp` to your tenant. Open it from the **Apps** tab in UiPath Automation Cloud.
+This publishes and deploys `gauntletapp` to your tenant. Open it from the **Apps** tab in UiPath Automation Cloud.
 
 > **Tenant note:** the app's `uipath.json` is currently pinned to org `thesingularityisnearer` / tenant `DefaultTenant`. Update [uipath/gauntlet-console/uipath.json](uipath/gauntlet-console/uipath.json) (`orgName`, `tenantName`, and `clientId` if you register your own OAuth app) before publishing to your own tenant.
 
@@ -197,7 +224,7 @@ Once everything is deployed:
 2. On the **Dashboard**, click *Run a fight*. Pick a Red persona (e.g. `aggressive-lawyer`), a scenario, and the Blue posture. Click **Replay this fight**.
 3. Open **Coach Lab** from the sidebar. Paste your LLM API key into the modal (stays in `sessionStorage`, never sent to Gauntlet servers). Click **Run live (add key)**. The Coach invents a new attack persona in front of you.
 4. On the **Defend** tab, open any losing fight. The **Fix Recommender** has already drafted a patch. Click **File to Action Center** to create a real Action Center task in your tenant.
-5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 75+ fights.
+5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 87 recorded fights.
 
 ### Local development
 
@@ -240,4 +267,18 @@ Built end-to-end with an agentic coding tool. Thematically right: an agent build
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+Licensed under the **MIT License**, one of the two licenses (MIT or Apache 2.0) permitted by the UiPath AgentHack 2026 rules. See [LICENSE](LICENSE).
+
+## Submission requirements (AgentHack 2026)
+
+Where each required element lives, so judges can verify at a glance:
+
+| Requirement | Status | Section |
+|---|---|---|
+| Public GitHub repo with all project files | ✅ | [github.com/tdries/uipath-hackathon-gauntlet](https://github.com/tdries/uipath-hackathon-gauntlet) |
+| What the project does | ✅ | [Project description](#project-description) |
+| Which UiPath components it uses | ✅ | [UiPath components used](#uipath-components-used) |
+| Coded agents, low-code Agent Builder, or a combination | ✅ A combination of both | [Agent type](#agent-type) |
+| Prerequisites | ✅ | [Prerequisites](#prerequisites) |
+| Setup instructions | ✅ | [Setup instructions](#setup-instructions-for-judging) |
+| MIT or Apache 2.0 license | ✅ MIT | [License](#license) |
