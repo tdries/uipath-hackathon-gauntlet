@@ -3,23 +3,26 @@
 // for any action that mutates state - the console is the cockpit, UiPath
 // is the runtime.
 
-const ORG = "thesingularityisnearer";
+// UiPath Labs (staging) environment — the solution is deployed into the
+// Shared/Gauntlet folder of this org. Authored in production, deployed here
+// via `uip solution deploy`, so the per-agent Studio Web designer IDs have no
+// staging equivalent: the component links open the deployed solution instead.
+const HOST = "https://staging.uipath.com";
+const ORG = "hackathon26_038";
 const TENANT = "DefaultTenant";
 
 const SOLUTION_ID = "cf351ed9-c9ba-4aa2-ceb6-08deb24d397f";
-const METROBANK_AGENT_ID = "7e55e6e7-6d26-49aa-abf9-c6b1c3c044d6";
-const REFEREE_AGENT_ID = "3d2ef97f-f896-4591-8771-9183ad43d76b";
 
 export const tenant = {
   org: ORG,
   tenant: TENANT,
-  baseCloud: `https://cloud.uipath.com/${ORG}`,
-  baseTenant: `https://cloud.uipath.com/${ORG}/${TENANT}`,
-  studioWebSolution: `https://cloud.uipath.com/${ORG}/studio_/designer/?solutionId=${SOLUTION_ID}`,
-  testManagerProject: `https://cloud.uipath.com/${ORG}/${TENANT}/testmanager_`,
-  maestroRoot: `https://cloud.uipath.com/${ORG}/${TENANT}/maestro_`,
-  agentBuilderBlue: `https://cloud.uipath.com/${ORG}/studio_/designer/${METROBANK_AGENT_ID}?solutionId=${SOLUTION_ID}`,
-  agentBuilderReferee: `https://cloud.uipath.com/${ORG}/studio_/designer/${REFEREE_AGENT_ID}?solutionId=${SOLUTION_ID}`,
+  baseCloud: `${HOST}/${ORG}`,
+  baseTenant: `${HOST}/${ORG}/${TENANT}`,
+  studioWebSolution: `${HOST}/${ORG}/studio_/designer/?solutionId=${SOLUTION_ID}`,
+  testManagerProject: `${HOST}/${ORG}/${TENANT}/testmanager_`,
+  maestroRoot: `${HOST}/${ORG}/${TENANT}/maestro_`,
+  agentBuilderBlue: `${HOST}/${ORG}/studio_/designer/?solutionId=${SOLUTION_ID}`,
+  agentBuilderReferee: `${HOST}/${ORG}/studio_/designer/?solutionId=${SOLUTION_ID}`,
 };
 
 export const componentMap = [

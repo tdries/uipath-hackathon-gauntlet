@@ -1,8 +1,9 @@
 {
   "name": "gauntletapp",
-  "version": "0.23.0",
+  "displayName": "gauntletapp",
+  "version": "1.0.1",
   "description": "gauntletapp",
   "author": "UiPath Developer",
   "contentType": "webapp",
-  "createdAt": "2026-05-18T17:22:59.355Z"
+  "createdAt": "2026-06-29T20:50:09.992Z"
 }

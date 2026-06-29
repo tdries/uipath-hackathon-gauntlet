@@ -1,8 +1,8 @@
 {
   "scope": "OR.Folders.Read OR.Tasks OR.Tasks.Read OR.Tasks.Write OR.Execution.Read OR.Jobs",
-  "clientId": "10ee2901-05f7-4935-aabe-7ba339979d0e",
-  "orgName": "thesingularityisnearer",
+  "clientId": "fceec2d5-40e4-4137-8f66-5c53d97a0859",
+  "orgName": "hackathon26_038",
   "tenantName": "DefaultTenant",
-  "baseUrl": "https://api.uipath.com",
+  "baseUrl": "https://staging.api.uipath.com",
   "redirectUri": "http://localhost:5173"
 }

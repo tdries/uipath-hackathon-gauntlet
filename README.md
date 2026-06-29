@@ -18,6 +18,17 @@
 
 ---
 
+## UiPath Labs environment (for judging)
+
+The complete solution is built and deployed in the UiPath Labs (staging) org provisioned for this submission:
+
+### https://staging.uipath.com/hackathon26_038/
+
+Tenant `DefaultTenant`. What is live there:
+
+- **Solution** (Maestro Case `FightArena` + Maestro Flow `RoundOrchestrator` + Agent Builder agents `MetroBankCSR` and `RefereeAgent`) is deployed and activated in the Orchestrator folder **`Shared/Gauntlet`**.
+- **Coded App** `gauntletapp` is deployed and live at **https://hackathon26_038.staging.uipath.host/gauntletapp/**. Open it from the **Apps** menu in the portal.
+
 ## Project description
 
 UiPath Agent Evaluations tell you whether your agent passes the tests **you wrote**. They don't tell you what happens when a real attacker shows up with a prompt you never imagined.
@@ -85,7 +96,7 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 
 | Component | Role | Where it lives |
 |---|---|---|
-| **UiPath Automation Cloud** | Execution and orchestration plane | Tenant: `cloud.uipath.com/thesingularityisnearer/DefaultTenant` |
+| **UiPath Automation Cloud** | Execution and orchestration plane | UiPath Labs tenant: `staging.uipath.com/hackathon26_038/DefaultTenant` |
 | **Maestro Case** (`FightArena`) | Long-running fight orchestration; rounds-as-tasks | [uipath/gauntlet/FightArena/](uipath/gauntlet/FightArena/) |
 | **Maestro Flow** (`RoundOrchestrator`) | Single round end-to-end: Red attack → Blue response → judge → score | [uipath/gauntlet/RoundOrchestrator/](uipath/gauntlet/RoundOrchestrator/) |
 | **Agent Builder** (`MetroBankCSR`) | Blue target. Reference customer-service agent (system under test) | [uipath/gauntlet/MetroBankCSR/](uipath/gauntlet/MetroBankCSR/) |
@@ -214,7 +225,7 @@ uip codedapp deploy --name gauntletapp         # deploy / upgrade the app
 
 This publishes and deploys `gauntletapp` to your tenant. Open it from the **Apps** tab in UiPath Automation Cloud.
 
-> **Tenant note:** the app's `uipath.json` is currently pinned to org `thesingularityisnearer` / tenant `DefaultTenant`. Update [uipath/gauntlet-console/uipath.json](uipath/gauntlet-console/uipath.json) (`orgName`, `tenantName`, and `clientId` if you register your own OAuth app) before publishing to your own tenant.
+> **Tenant note:** the app's `uipath.json` is configured for the UiPath Labs org `hackathon26_038` / tenant `DefaultTenant` (base URL `https://staging.api.uipath.com`). Update [uipath/gauntlet-console/uipath.json](uipath/gauntlet-console/uipath.json) (`orgName`, `tenantName`, `baseUrl`, and `clientId` for your own External Application) before publishing to your own tenant.
 
 ### 6. Run the demo workflow
 
@@ -282,3 +293,4 @@ Where each required element lives, so judges can verify at a glance:
 | Prerequisites | ✅ | [Prerequisites](#prerequisites) |
 | Setup instructions | ✅ | [Setup instructions](#setup-instructions-for-judging) |
 | MIT or Apache 2.0 license | ✅ MIT | [License](#license) |
+| UiPath Labs environment URL | ✅ | [staging.uipath.com/hackathon26_038](https://staging.uipath.com/hackathon26_038/) |
