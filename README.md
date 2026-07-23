@@ -27,6 +27,7 @@ The complete solution is built and deployed in the UiPath Labs (staging) org pro
 Tenant `DefaultTenant`. What is live there:
 
 - **Solution** (Maestro Case `FightArena` + Maestro Flow `RoundOrchestrator` + Agent Builder agents `MetroBankCSR` and `RefereeAgent`) is deployed and activated in the Orchestrator folder **`Shared/Gauntlet`**.
+- **RPA process** `GauntletFormTask` (renders the hardening brief as an Action Center form task on a serverless robot) is deployed in the same folder.
 - **Coded App** `gauntletapp` is deployed and live at **https://hackathon26_038.staging.uipath.host/gauntletapp/**. Open it from the **Apps** menu in the portal.
 
 ## Project description
@@ -46,7 +47,7 @@ Agent safety today is mostly vibes-based. Teams ship an agent, write a few eval 
 | Static eval rubrics that humans wrote | Self-play that invents new evals |
 | "Did we test prompt injection?" → maybe? | OWASP / MITRE coverage matrix on every release |
 | Bug found in prod → manual repro → manual test case | Auto-populated Test Manager regression entry |
-| Failure → developer manually patches prompt | Fix Recommender drafts the patch, opens Action Center task |
+| Failure → developer manually patches prompt | Fix Recommender drafts the patch, files a rendered Action Center approval, and one click patches and redeploys the agent |
 
 ## In-app screenshots
 
@@ -70,7 +71,7 @@ Single fight or batch of up to 10. Pick the Red persona, the scenario, and the B
 
 ### Fix Lab
 
-Open any losing fight, read the Fix Recommender's patch proposal (root cause, suggested system-prompt patch, regression test), file it to **UiPath Action Center** for human approval.
+Open any losing fight, read the Fix Recommender's patch proposal (root cause, suggested system-prompt patch, regression tests), then click **Apply patch to agent**. A serverless UiPath robot renders the full brief as a styled **Action Center** form task for human approval. Approving it patches the Blue agent and redeploys, closing the self-hardening loop.
 
 ![Fix Lab](docs/screenshots/04-fix-lab.png)
 
@@ -104,7 +105,8 @@ Full transcripts, referee verdicts, fix-proposal links. Click any row to drill i
 | **Coded Agents** (Python, LangGraph) | Red Coach (`gauntlet coach`), Fix Recommender (`gauntlet fix`) | [src/gauntlet/](src/gauntlet/) |
 | **Coded App** (`gauntletapp`) | Operator surface: Threat Dashboard, Coach Lab, Fix Lab, Analytics, Audit, Logs | [uipath/gauntlet-console/](uipath/gauntlet-console/) |
 | **Test Manager** | Persistent regression set, auto-populated by Coach on winning attacks | Imported via [scripts/import_runs_to_test_manager.py](scripts/import_runs_to_test_manager.py) |
-| **Action Center** | Human-in-the-loop fix approval; tasks opened from Fix Lab | Live API call from browser via `@uipath/uipath-typescript` |
+| **Action Center** | Human-in-the-loop approval. Fix Lab files a rendered form task carrying the full hardening brief | Created first-party by the `gauntlet-formtask` robot |
+| **RPA process** (`gauntlet-formtask`) | Cross-platform serverless robot running the *Create Form Task* activity, so the brief renders as a real Action Center form (a first-party robot can create form tasks a browser call cannot) | [uipath/gauntlet-formtask/](uipath/gauntlet-formtask/) |
 | **UiPath TypeScript SDK** (`@uipath/uipath-typescript`) | Browser-side calls from Coded App to Maestro instances, Test Manager, Action Center | [uipath/gauntlet-console/src/lib/uipath.ts](uipath/gauntlet-console/src/lib/uipath.ts) |
 | **`uip` CLI** (latest) | Login, pack, publish, deploy across all artifacts | Used in setup steps below |
 
@@ -234,7 +236,7 @@ Once everything is deployed:
 1. **Open `gauntletapp`** in your UiPath tenant.
 2. On the **Dashboard**, click *Run a fight*. Pick a Red persona (e.g. `aggressive-lawyer`), a scenario, and the Blue posture. Click **Replay this fight**.
 3. Open **Coach Lab** from the sidebar. Paste your LLM API key into the modal (stays in `sessionStorage`, never sent to Gauntlet servers). Click **Run live (add key)**. The Coach invents a new attack persona in front of you.
-4. On the **Defend** tab, open any losing fight. The **Fix Recommender** has already drafted a patch. Click **File to Action Center** to create a real Action Center task in your tenant.
+4. On the **Defend** tab (**Fix Lab**), open any losing fight. The **Fix Recommender** has already drafted a patch. Click **Apply patch to agent**. A serverless robot renders the brief as a form task in **Action Center**; approve it to patch and redeploy the Blue agent.
 5. Browse the **Audit** tab for OWASP LLM Top-10 / MITRE ATLAS coverage, and **Logs** for the full corpus of 75 recorded fights.
 
 ### Local development
@@ -266,10 +268,11 @@ Built end-to-end with an agentic coding tool. Thematically right: an agent build
 │   │   ├── RoundOrchestrator/  Maestro Flow
 │   │   ├── MetroBankCSR/       Agent Builder agent (Blue target)
 │   │   └── RefereeAgent/       Agent Builder agent (judge)
+│   ├── gauntlet-formtask/  RPA process. Renders the Action Center hardening brief
 │   └── gauntlet-console/   React Coded App (`gauntletapp`)
 ├── personas/               Red attack persona library (8 YAML personas)
 ├── scenarios/              Fight scenarios (15 YAML scenarios)
-├── scripts/                Test Manager import helper
+├── scripts/                Helper scripts (Test Manager import, apply-patch, fight drivers)
 └── docs/
     ├── ARCHITECTURE.md     Detailed system architecture
     ├── PERSONAS.md         Red-team persona reference
