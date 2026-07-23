@@ -1,0 +1,51 @@
+{
+  "id": "dd5be530-7412-4e58-959f-bc9ee25a7dea",
+  "form": [
+    {
+      "label": "Brief",
+      "tableView": false,
+      "key": "brief",
+      "type": "content",
+      "input": false,
+      "html": "<div style='font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:860px'><div style='background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:22px 24px;color:#0f172a;line-height:1.55;margin:0 0 12px'><div style='font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:#dc2626;font-weight:800'>Gauntlet suggestion</div><div style='font-size:22px;font-weight:800;margin:2px 0 8px;color:#0f172a'>Harden MetroBankCSR (Blue) vs {{data.persona}}</div><div style='font-size:13px;color:#64748b;margin-bottom:14px'>Requested by <b style='color:#334155'>Tim Dries</b> &middot; Severity <b style='color:#334155'>{{data.severity}}</b> &middot; {{data.owasp}} &middot; {{data.mitre}}</div><div style='display:flex;align-items:stretch;gap:10px;margin:0 0 14px'><div style='flex:1;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px 14px'><div style='font-size:10.5px;letter-spacing:.1em;color:#dc2626;font-weight:800;text-transform:uppercase'>&#9876;&#65039; Red &middot; Attacker</div><div style='font-size:15px;font-weight:800;color:#991b1b;margin-top:3px'>{{data.persona}}</div></div><div style='display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#94a3b8'>VS</div><div style='flex:1;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px 14px'><div style='font-size:10.5px;letter-spacing:.1em;color:#2563eb;font-weight:800;text-transform:uppercase'>&#128737;&#65039; Blue &middot; Defender</div><div style='font-size:15px;font-weight:800;color:#1e40af;margin-top:3px'>MetroBankCSR</div></div></div><div style='font-size:12px;color:#b91c1c;font-weight:700;margin:0 0 16px;text-align:center;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:7px'>&#9889; Red won this round &mdash; the attack below succeeded and needs patching</div><div style='font-size:15px;color:#0f172a;font-weight:600;margin:0 0 16px'>{{data.summary}}</div><div style='font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#64748b;font-weight:700;margin:0 0 4px'>Root cause</div><div style='font-size:14px;color:#0f172a'><b>Tactic:</b> {{data.tactic}}<br/><b>Rule violated:</b> {{data.rule_violated}}</div><blockquote style='border-left:3px solid #dc2626;margin:8px 0 0;padding:4px 14px;color:#475569;font-style:italic'>&ldquo;{{data.break_quote}}&rdquo;</blockquote></div><div style='font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#cbd5e1;font-weight:700;margin:0 0 6px;padding-left:4px'>Proposed prompt patch &mdash; {{data.patch_section}}</div><pre style='background:#0f172a;color:#e2e8f0;padding:14px 16px;border:1px solid #334155;border-radius:12px;overflow:auto;font-size:12.5px;line-height:1.5;white-space:pre-wrap;margin:0 0 14px'>{{data.patch}}</pre><div style='background:#ffffff;border:1px solid #e2e8f0;border-radius:14px;padding:18px 22px;color:#0f172a;margin:0 0 14px'><div style='font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#64748b;font-weight:700;margin:0 0 4px'>Why it holds without blocking real customers</div><div style='font-size:14px;color:#0f172a'>{{data.rationale}}</div></div><div style='font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#cbd5e1;font-weight:700;margin:0 0 6px;padding-left:4px'>Regression tests to add</div><pre style='background:#0f172a;color:#e2e8f0;padding:14px 16px;border:1px solid #334155;border-radius:12px;overflow:auto;font-size:12.5px;line-height:1.5;white-space:pre-wrap;margin:0 0 14px'>{{data.tests}}</pre><div style='font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#cbd5e1;font-weight:700;margin:0 0 6px;padding-left:4px'>How to apply (after approval)</div><pre style='background:#0f172a;color:#e2e8f0;padding:14px 16px;border:1px solid #334155;border-radius:12px;overflow:auto;font-size:12.5px;line-height:1.5;white-space:pre-wrap;margin:0 0 14px'>{{data.apply_command}}</pre><div style='font-size:14px;padding-left:4px'><a href='{{data.agent_prompt_url}}' style='color:#60a5fa;font-weight:600'>See the agent prompt in Agent Studio &rarr;</a></div></div>",
+      "tag": "div",
+      "attrs": [],
+      "content": "",
+      "refreshOnChange": false,
+      "properties": {},
+      "customConditional": "",
+      "conditional": {
+        "show": "",
+        "when": "",
+        "json": ""
+      },
+      "logic": []
+    },
+    {
+      "label": "Approve hardening",
+      "state": "",
+      "theme": "primary",
+      "shortcut": "",
+      "disableOnInvalid": false,
+      "tableView": true,
+      "alwaysEnabled": true,
+      "type": "button",
+      "key": "approve",
+      "input": true,
+      "defaultValue": false,
+      "action": "submit",
+      "showValidations": false,
+      "event": "",
+      "url": "",
+      "custom": "",
+      "properties": {},
+      "customConditional": "",
+      "conditional": {
+        "show": "",
+        "when": "",
+        "json": ""
+      },
+      "logic": []
+    }
+  ]
+}

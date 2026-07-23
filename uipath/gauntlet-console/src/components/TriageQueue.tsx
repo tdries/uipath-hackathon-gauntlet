@@ -207,7 +207,7 @@ export function TriageQueue() {
           <div className="triage-state">
             No triage tasks yet. Open <strong>Fix Recommender</strong>, pick a
             red-win proposal, hit{" "}
-            <strong>Create as live Action Center task</strong> - the row will
+            <strong>Create as live Action Center task</strong>, and the row will
             appear here.
           </div>
         )}

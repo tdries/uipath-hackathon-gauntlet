@@ -84,7 +84,7 @@ function fightToCef(f: FightRecord): string {
 
 export function generateCefLog(): string {
   const lines: string[] = [];
-  lines.push("# GAUNTLET adversarial test cloud - CEF event stream");
+  lines.push("# GAUNTLET adversarial test cloud. CEF event stream");
   lines.push(`# Generated: ${new Date().toISOString()}`);
   lines.push(`# Events: ${corpus.length}`);
   lines.push("");

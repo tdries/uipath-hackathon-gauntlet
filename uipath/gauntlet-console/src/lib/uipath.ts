@@ -99,6 +99,121 @@ export async function getFolderId(sdk: UiPath): Promise<number | null> {
   return _folderId;
 }
 
+/** Authenticated Orchestrator OData call. The `@uipath/uipath-typescript`
+ *  SDK exposes no `jobs` service, so job start/poll goes through raw REST,
+ *  reusing the same base-url/org/tenant/token wiring as getFolderId.
+ *  `path` begins at `/odata/...`. Returns the parsed JSON body. */
+async function apiFetch(
+  sdk: UiPath,
+  servicePath: string, // begins with "/orchestrator_/…" or "/testmanager_/…"
+  opts?: { method?: string; body?: unknown; folderId?: number }
+): Promise<Record<string, unknown>> {
+  await getUiPath(); // ensure _orgId/_tenantId/_baseUrl are populated
+  const token = asAuth(sdk).getToken();
+  if (!token || !_orgId || !_tenantId || !_baseUrl) {
+    throw new Error("UiPath session not ready (sign in to the app first).");
+  }
+  const url = `${_baseUrl.replace(/\/$/, "")}/${_orgId}/${_tenantId}${servicePath}`;
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+  if (opts?.body !== undefined) headers["Content-Type"] = "application/json";
+  if (opts?.folderId) headers["X-UIPATH-OrganizationUnitId"] = String(opts.folderId);
+  const resp = await fetch(url, {
+    method: opts?.method ?? "GET",
+    headers,
+    body: opts?.body !== undefined ? JSON.stringify(opts.body) : undefined,
+  });
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`${resp.status}: ${text.slice(0, 240)}`);
+  }
+  return (await resp.json()) as Record<string, unknown>;
+}
+
+/** Orchestrator OData/API call (path begins at "/odata/…" or "/api/…"). */
+export function orchestratorFetch(
+  sdk: UiPath,
+  path: string,
+  opts?: { method?: string; body?: unknown; folderId?: number }
+): Promise<Record<string, unknown>> {
+  return apiFetch(sdk, `/orchestrator_${path}`, opts);
+}
+
+/** Test Manager API call (path begins at "/api/v2/…"). The SDK has no Test
+ *  Manager service, so this goes through raw REST — same as jobs. Needs a
+ *  TM.* scope on the external app (added in Portal → External Applications). */
+export function testManagerFetch(
+  sdk: UiPath,
+  path: string,
+  opts?: { method?: string; body?: unknown }
+): Promise<Record<string, unknown>> {
+  return apiFetch(sdk, `/testmanager_${path}`, opts);
+}
+
+/** Create an Action Center FORM task (renders a layout, unlike the SDK's
+ *  generic task). Uses the Orchestrator OData action CreateFormTask — same
+ *  `/odata/Tasks/UiPath.Server.Configuration.OData.*` namespace as AssignTasks,
+ *  since the SDK/CLI only expose generic + app tasks. The `html` becomes a
+ *  Form.io content component so we get full design control. Returns the id. */
+export async function createFormTask(
+  sdk: UiPath,
+  folderId: number,
+  o: {
+    title: string;
+    html: string;
+    priority?: "Low" | "Medium" | "High" | "Critical";
+    taskCatalogName?: string;
+    approveLabel?: string;
+    data?: Record<string, unknown>;
+  }
+): Promise<number> {
+  const formLayout = {
+    display: "form",
+    components: [
+      { type: "content", key: "gauntlet", input: false, html: o.html },
+      {
+        type: "button",
+        key: "approve",
+        label: o.approveLabel ?? "Approve",
+        action: "submit",
+        theme: "primary",
+        input: true,
+        disableOnInvalid: false,
+      },
+    ],
+  };
+  // Body wraps the task metadata in `taskObj` (PascalCase), the Form.io schema
+  // in `formLayout`, and any field values in `taskData`. 1MB combined cap.
+  const taskObj: Record<string, unknown> = {
+    Title: o.title.slice(0, 250),
+    Priority: o.priority ?? "Medium",
+  };
+  if (o.taskCatalogName) taskObj.TaskCatalogName = o.taskCatalogName;
+  const res = await orchestratorFetch(
+    sdk,
+    "/odata/Tasks/UiPath.Server.Configuration.OData.CreateFormTask",
+    { method: "POST", body: { taskObj, formLayout, taskData: o.data ?? {} }, folderId }
+  );
+  return Number((res as { Id?: number; id?: number }).Id ?? (res as { id?: number }).id ?? 0);
+}
+
+/** Best-effort assign a task to a user (by email). Non-fatal on failure. */
+export async function assignTaskToUser(
+  sdk: UiPath,
+  folderId: number,
+  taskId: number,
+  userNameOrEmail: string
+): Promise<void> {
+  await orchestratorFetch(
+    sdk,
+    "/odata/Tasks/UiPath.Server.Configuration.OData.AssignTasks",
+    {
+      method: "POST",
+      folderId,
+      body: { taskAssignments: [{ TaskId: taskId, UserNameOrEmail: userNameOrEmail }] },
+    }
+  );
+}
+
 /** Deep-link to a task in the Action Center UI.
  *
  *  Action Center is a separate service at `/actions_/` in this tenant

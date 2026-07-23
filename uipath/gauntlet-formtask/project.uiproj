@@ -1,0 +1,6 @@
+{
+  "Name": "gauntlet-formtask",
+  "ProjectType": "Process",
+  "Description": "Gauntlet: renders an Action Center form task carrying a fix brief (cross-platform, serverless)",
+  "MainFile": "Main.xaml"
+}

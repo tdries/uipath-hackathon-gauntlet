@@ -1,11 +1,9 @@
 {
   "appName": "gauntletapp",
   "displayName": "gauntletapp",
-  "appVersion": "1.0.1",
+  "appVersion": "1.0.15",
   "systemName": "ID63acd8d785024ddd9e02f23dc894f5a8",
   "appUrl": null,
-  "registeredAt": "2026-06-29T20:50:58.382Z",
-  "appType": "Web",
-  "deploymentId": "4516281a-5fa5-42c4-87f1-03aa626c2f22",
-  "deployedAt": "2026-06-29T20:51:08.966Z"
+  "registeredAt": "2026-07-23T12:17:46.856Z",
+  "appType": "Web"
 }

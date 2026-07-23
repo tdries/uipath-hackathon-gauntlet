@@ -13,7 +13,7 @@ The Python engine is the source of truth; `runs/` is the shared artifact both ha
 
 ## Commands
 
-Python engine (run from repo root, `pip install -e .` first; live `fight`/`coach`/`fix` need `ANTHROPIC_API_KEY` in `.env`):
+Python engine is a **click** CLI (`gauntlet.cli:main`). Run from repo root, `pip install -e .` first; live `fight`/`coach`/`fix` need `ANTHROPIC_API_KEY` in `.env`:
 ```bash
 gauntlet --help                                          # all commands
 gauntlet fight <persona> --scenario <scn> --blue-mode naive   # one live fight
@@ -21,9 +21,11 @@ gauntlet batch --pairs canonical --blue-modes standard,lenient  # grow the corpu
 gauntlet coach --auto-fight                              # LLM invents a new persona, fights it
 gauntlet fix runs/<file>.json                            # draft a fix for a losing fight
 gauntlet leaderboard                                     # summarize runs/ offline (no key needed)
+gauntlet render                                          # fold runs/ into a standalone dashboard/index.html (offline, no key)
+gauntlet export-jsonl                                    # dump the corpus as JSONL
 ruff check src/                                          # lint (line-length 100, py311)
 ```
-`--blue-mode` / `--blue-modes` is one of `standard | lenient | naive | external`.
+`--blue-mode` / `--blue-modes` is one of `standard | lenient | naive | external`. `render` (`dashboard.py`) is a **third** corpus consumer alongside the console and Test Manager: a self-contained HTML dashboard with no build step, used for the demo video and as an embeddable app.
 
 React console (`cd uipath/gauntlet-console`):
 ```bash
@@ -56,5 +58,4 @@ The Coach maximizes successful attacks, so `runs/` grows itself — that byprodu
 - **Documentation must not reference Claude, Anthropic, Opus, Sonnet, or Haiku by name** — say "frontier LLM" / "a configurable LLM". Model IDs in *code* (`llm.py`) are fine. **No em dashes in prose** anywhere in docs.
 - `runs/` JSON fights are git-tracked (the corpus); `runs/_*`, `*.jsonl`, dev debris are gitignored.
 - `personas/` (8 YAML) and `scenarios/` (15 YAML) are the attack library; `coach` writes new ones here at runtime.
-- `Foody/` is an unrelated, untracked side project — ignore it; it is not part of Gauntlet.
 - Tenant: `uipath/gauntlet-console/uipath.json` and `src/data/tenant.ts` point at the UiPath Labs org `hackathon26_038` (staging, base URL `https://staging.api.uipath.com`), where the submission is deployed (Orchestrator folder `Shared/Gauntlet`; app at `hackathon26_038.staging.uipath.host/gauntletapp`). Change both before deploying elsewhere.

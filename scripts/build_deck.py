@@ -21,7 +21,12 @@ WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
 
 REPO = Path(__file__).resolve().parent.parent
-TEMPLATE = REPO / "Submission deck.template.pptx.bak"
+# Prefer the original UiPath master template if it's present locally; otherwise
+# fall back to the branded base snapshot (a read-only copy of a previously built
+# deck, so the master, layouts, and brand styling survive even when the .bak is
+# not on this machine).
+_BAK = REPO / "Submission deck.template.pptx.bak"
+TEMPLATE = _BAK if _BAK.exists() else REPO / "Submission deck.base.pptx"
 OUTPUT = REPO / "Submission deck.pptx"
 SCREENSHOTS = REPO / "docs" / "screenshots"
 
@@ -72,6 +77,10 @@ def find_shape_by_text(slide, needle):
     return None
 
 
+def slide_has_picture(slide):
+    return any(getattr(sh, "shape_type", None) == 13 for sh in slide.shapes)
+
+
 # ──────────────────────────── content ────────────────────────────
 
 
@@ -82,10 +91,12 @@ def build():
     s1 = prs.slides[0]
     eyebrow = find_shape_by_text(s1, "UiPath AgentHack")
     if eyebrow:
-        set_lines(eyebrow.text_frame, ["UiPath AgentHack 2026  •  Track 3 (Test Cloud)"])
-    title = find_shape_by_text(s1, "Presentation title")
+        set_lines(eyebrow.text_frame, ["UiPath AgentHack 2026  •  Track 3 (Test Cloud)  •  Finalist"])
+    # .bak uses the placeholder "Presentation title"; the branded base already
+    # reads "Gauntlet ...". Match either.
+    title = find_shape_by_text(s1, "Presentation title") or find_shape_by_text(s1, "Gauntlet")
     if title:
-        # Short subtitle so it stays on one line and doesn't crash into the eyebrow.
+        # Keep the subtitle to one line so it doesn't wrap into the eyebrow below.
         set_lines(title.text_frame, [
             "Gauntlet",
             "Adversarial Test Cloud.",
@@ -118,52 +129,60 @@ def build():
 
     # ─── Slide 3: Problem + Solution ─────────────────────────────────
     s3 = prs.slides[2]
-    head = find_shape_by_text(s3, "Problem statement and proposed solution")
+    head = (find_shape_by_text(s3, "Problem statement and proposed solution")
+            or find_shape_by_text(s3, "The gap between"))
     if head:
-        set_lines(head.text_frame, ["The gap between Agent Evaluations and real adversaries"])
+        set_lines(head.text_frame,
+                  ["Your agent passes the tests you wrote. Then a real attacker shows up."])
 
-    problem_body = find_shape_by_text(s3, "What real-world problem")
+    problem_body = (find_shape_by_text(s3, "What real-world problem")
+                    or find_shape_by_text(s3, "UiPath Agent Evaluations test what you wrote"))
     if problem_body:
         set_lines(problem_body.text_frame, [
-            "UiPath Agent Evaluations test what you wrote.",
-            "They don't test what a real attacker will invent.",
+            "UiPath Agent Evaluations score your agent against a static rubric a human wrote.",
+            "They cannot tell you what happens when an attacker invents a prompt nobody imagined.",
             "",
-            "Agent safety today is vibes-based: static rubrics, no continuous adversarial loop, no compliance-ready coverage matrix.",
+            "Agent safety today is hope, not proof: no adversary in the loop, and no coverage a compliance officer can actually read.",
         ])
 
-    solution_body = find_shape_by_text(s3, "Brief summary of the solution")
+    solution_body = (find_shape_by_text(s3, "Brief summary of the solution")
+                     or find_shape_by_text(s3, "A Red Coach"))
     if solution_body:
         set_lines(solution_body.text_frame, [
-            "A Red Coach (a frontier LLM) invents new attacks against your agents.",
-            "Winning attacks auto-populate UiPath Test Manager as regression tests.",
-            "Failing fights open Action Center tasks with concrete fix recommendations.",
+            "Gauntlet puts a Red Coach, a frontier LLM, in the ring against your agent.",
+            "When the known attacks stop landing, the Coach invents new ones mid-fight.",
+            "Every win becomes a UiPath Test Manager regression test, automatically.",
+            "Every loss opens an Action Center task with the fix already drafted.",
             "",
-            "Every fight double-tagged: OWASP LLM Top-10 + MITRE ATLAS.",
+            "Every fight double-tagged to OWASP LLM Top-10 and MITRE ATLAS.",
         ])
 
     # ─── Slide 4: Benefits and UiPath components ─────────────────────
     s4 = prs.slides[3]
 
-    title4 = find_shape_by_text(s4, "Benefits and technologies used")
+    title4 = (find_shape_by_text(s4, "Benefits and technologies used")
+              or find_shape_by_text(s4, "Benefits, impact, and UiPath"))
     if title4:
-        set_lines(title4.text_frame, ["Benefits, impact, and UiPath components used"])
+        set_lines(title4.text_frame, ["What it proved, and what it runs on"])
 
-    sub4 = find_shape_by_text(s4, "Benefits, impact and outcomes")
+    sub4 = (find_shape_by_text(s4, "Benefits, impact and outcomes")
+            or find_shape_by_text(s4, "Outcomes"))
     if sub4:
         set_lines(sub4.text_frame, ["Outcomes"], font_size_pt=24, color=BLACK, bold=True)
 
-    body4 = find_shape_by_text(s4, "What does this agent actually achieve")
+    body4 = (find_shape_by_text(s4, "What does this agent actually achieve")
+             or find_shape_by_text(s4, "75+ adversarial fights")
+             or find_shape_by_text(s4, "adversarial fights"))
     if body4:
         set_lines(body4.text_frame, [
-            "75+ adversarial fights run.",
-            "9 critical findings auto-diagnosed.",
-            "Worst-case win rate of 22% exposed against the naive blue posture.",
-            "Coach invents attack personas the team never seeded.",
-            "Test Manager regression suite that grows itself.",
-            "Auditor-ready OWASP / MITRE coverage matrix.",
-        ], font_size_pt=16, color=BLACK)
+            "Strict posture held the line: 27 of 27 attacks blocked, average defense 90.6 / 100.",
+            "Weaken the policy and it leaks: worst-case 22% attacker win rate, measured not guessed.",
+            "Headline breach: a planted \"KYC subsystem\" note talked a naive agent into disclosing an $84,320 balance with zero 2FA.",
+            "75 fights run, 9 critical findings auto-diagnosed with a patch proposed.",
+            "A regression suite that grows itself, plus an auditor-ready OWASP / MITRE matrix.",
+        ], font_size_pt=15, color=BLACK)
 
-    details = find_shape_by_text(s4, "Details")
+    details = (find_shape_by_text(s4, "Details") or find_shape_by_text(s4, "Components"))
     if details:
         set_lines(details.text_frame, ["Components"], font_size_pt=24, color=BLACK, bold=True)
 
@@ -191,11 +210,13 @@ def build():
 
     # ─── Slide 5: Architecture ───────────────────────────────────────
     s5 = prs.slides[4]
-    head5 = find_shape_by_text(s5, "Solution architecture")
+    head5 = (find_shape_by_text(s5, "Solution architecture")
+             or find_shape_by_text(s5, "How it works"))
     if head5:
         set_lines(head5.text_frame, ["How it works"])
 
-    body5 = find_shape_by_text(s5, "This slide is optional")
+    body5 = (find_shape_by_text(s5, "This slide is optional")
+             or find_shape_by_text(s5, "FightArena is a long-lived"))
     if body5:
         # Shrink to left half so the screenshot can sit on the right.
         body5.left = Inches(0.4)
@@ -203,21 +224,21 @@ def build():
         body5.width = Inches(5.6)
         body5.height = Inches(5.2)
         set_lines(body5.text_frame, [
-            "FightArena is a long-lived Maestro Case.",
+            "FightArena is a long-lived Maestro Case, one per target agent.",
             "",
-            "Each round = one RoundOrchestrator (Maestro Flow):",
-            "Red attack → Blue response → Referee verdict → score.",
+            "Each round is a RoundOrchestrator Flow:",
+            "Red attacks, Blue responds, the Referee agent scores it.",
             "",
-            "Coach self-play loop:",
-            "pick the highest expected-reward persona,",
-            "or ask the LLM to invent a new one.",
+            "The Coach runs a self-play loop:",
+            "play the highest expected-reward attack,",
+            "or ask the LLM to invent a brand-new persona.",
             "",
-            "On Red win → save to Test Manager.",
-            "On Blue loss → Fix Recommender → Action Center.",
+            "Red win goes to Test Manager as a regression.",
+            "Blue loss goes to the Fix Recommender, then Action Center.",
         ], font_size_pt=15, color=BLACK)
 
     coach_img = SCREENSHOTS / "02-coach-lab.png"
-    if coach_img.exists():
+    if coach_img.exists() and not slide_has_picture(s5):
         slide_w = prs.slide_width
         img_w = Inches(6.4)
         img_left = slide_w - img_w - Inches(0.3)
@@ -226,30 +247,32 @@ def build():
 
     # ─── Slide 6: Coverage + demo ────────────────────────────────────
     s6 = prs.slides[5]
-    head6 = find_shape_by_text(s6, "Miscellaneous")
+    head6 = (find_shape_by_text(s6, "Miscellaneous")
+             or find_shape_by_text(s6, "Coverage, audit"))
     if head6:
         set_lines(head6.text_frame, ["Coverage, audit, and the live demo"])
 
-    body6 = find_shape_by_text(s6, "If you need extra slides")
+    body6 = (find_shape_by_text(s6, "If you need extra slides")
+             or find_shape_by_text(s6, "Every fight tagged against OWASP"))
     if body6:
         body6.left = Inches(0.4)
         body6.top = Inches(1.7)
         body6.width = Inches(5.6)
         body6.height = Inches(5.2)
         set_lines(body6.text_frame, [
-            "Every fight tagged against OWASP LLM Top-10 + MITRE ATLAS.",
-            "Audit renders that as a live coverage matrix.",
+            "Every fight is tagged to OWASP LLM Top-10 and MITRE ATLAS.",
+            "The Audit view renders it as a live coverage matrix, red where Blue is weak.",
             "",
-            "Coach Lab streams a real LLM call from the browser using the user's own session key. The persona is authored during the demo, not pre-recorded.",
+            "In Coach Lab the LLM call streams from your browser with your own key. The attack persona is authored live on stage, not pre-recorded.",
             "",
-            "Built end-to-end with an agentic coding tool.",
+            "Framework-neutral: coded agents, Agent Builder low-code, and an external LangGraph target all fight in the same arena.",
             "",
             "▶  youtu.be/1q9W5SC_fxA",
             "📦  github.com/tdries/uipath-hackathon-gauntlet",
         ], font_size_pt=15, color=BLACK)
 
     audit_img = SCREENSHOTS / "06-audit.png"
-    if audit_img.exists():
+    if audit_img.exists() and not slide_has_picture(s6):
         slide_w = prs.slide_width
         img_w = Inches(6.4)
         img_left = slide_w - img_w - Inches(0.3)
@@ -258,7 +281,8 @@ def build():
 
     # ─── Slide 7: Closing ────────────────────────────────────────────
     s7 = prs.slides[6]
-    closing = find_shape_by_text(s7, "Closing message")
+    closing = (find_shape_by_text(s7, "Closing message")
+               or find_shape_by_text(s7, "Go safe"))
     if closing:
         set_lines(closing.text_frame, ["Go safe, or go home."])
 

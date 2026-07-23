@@ -1,0 +1,106 @@
+<Activity mc:Ignorable="sap sap2010" x:Class="Main" mva:VisualBasic.Settings="{x:Null}"
+xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
+xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
+xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
+xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib"
+xmlns:ui="clr-namespace:UiPath.Core.Activities;assembly=UiPath.System.Activities"
+xmlns:upaf="clr-namespace:UiPath.Persistence.Activities.FormTask;assembly=UiPath.Persistence.Activities"
+xmlns:upat="clr-namespace:UiPath.Persistence.Activities.Tasks;assembly=UiPath.Persistence.Activities"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <x:Members>
+        <x:Property Name="in_TaskTitle" Type="InArgument(x:String)" />
+        <x:Property Name="in_Assignee" Type="InArgument(x:String)" />
+        <x:Property Name="in_persona" Type="InArgument(x:String)" />
+        <x:Property Name="in_severity" Type="InArgument(x:String)" />
+        <x:Property Name="in_owasp" Type="InArgument(x:String)" />
+        <x:Property Name="in_mitre" Type="InArgument(x:String)" />
+        <x:Property Name="in_summary" Type="InArgument(x:String)" />
+        <x:Property Name="in_tactic" Type="InArgument(x:String)" />
+        <x:Property Name="in_rule_violated" Type="InArgument(x:String)" />
+        <x:Property Name="in_break_quote" Type="InArgument(x:String)" />
+        <x:Property Name="in_patch_section" Type="InArgument(x:String)" />
+        <x:Property Name="in_patch" Type="InArgument(x:String)" />
+        <x:Property Name="in_rationale" Type="InArgument(x:String)" />
+        <x:Property Name="in_tests" Type="InArgument(x:String)" />
+        <x:Property Name="in_apply_command" Type="InArgument(x:String)" />
+        <x:Property Name="in_agent_prompt_url" Type="InArgument(x:String)" />
+    </x:Members>
+    <TextExpression.NamespacesForImplementation>
+        <sco:Collection x:TypeArguments="x:String">
+            <x:String>System.Activities</x:String>
+            <x:String>System.Activities.Statements</x:String>
+            <x:String>System.Activities.Expressions</x:String>
+            <x:String>System.Activities.Validation</x:String>
+            <x:String>System.Activities.XamlIntegration</x:String>
+            <x:String>Microsoft.VisualBasic</x:String>
+            <x:String>Microsoft.VisualBasic.Activities</x:String>
+            <x:String>System</x:String>
+            <x:String>System.Collections</x:String>
+            <x:String>System.Collections.Generic</x:String>
+            <x:String>System.Collections.ObjectModel</x:String>
+            <x:String>System.Data</x:String>
+            <x:String>System.Diagnostics</x:String>
+            <x:String>System.Drawing</x:String>
+            <x:String>System.IO</x:String>
+            <x:String>System.Linq</x:String>
+            <x:String>System.Net.Mail</x:String>
+            <x:String>System.Xml</x:String>
+            <x:String>System.Xml.Linq</x:String>
+            <x:String>UiPath.Core</x:String>
+            <x:String>UiPath.Core.Activities</x:String>
+            <x:String>System.Windows.Markup</x:String>
+        </sco:Collection>
+    </TextExpression.NamespacesForImplementation>
+    <TextExpression.ReferencesForImplementation>
+        <sco:Collection x:TypeArguments="AssemblyReference">
+            <AssemblyReference>System.Activities</AssemblyReference>
+            <AssemblyReference>Microsoft.VisualBasic</AssemblyReference>
+            <AssemblyReference>System.Private.CoreLib</AssemblyReference>
+            <AssemblyReference>mscorlib</AssemblyReference>
+            <AssemblyReference>System.Data</AssemblyReference>
+            <AssemblyReference>System.Data.Common</AssemblyReference>
+            <AssemblyReference>System</AssemblyReference>
+            <AssemblyReference>System.Linq</AssemblyReference>
+            <AssemblyReference>System.Xml</AssemblyReference>
+            <AssemblyReference>System.Xml.Linq</AssemblyReference>
+            <AssemblyReference>System.Xaml</AssemblyReference>
+            <AssemblyReference>UiPath.System.Activities</AssemblyReference>
+            <AssemblyReference>UiPath.Persistence.Activities</AssemblyReference>
+        </sco:Collection>
+    </TextExpression.ReferencesForImplementation>
+    <Sequence DisplayName="Main Sequence" sap2010:WorkflowViewState.IdRef="Sequence_1">
+        <ui:LogMessage DisplayName="Log start" Level="Info" Message="Gauntlet: creating Action Center form task" />
+        <upaf:CreateFormTask DisplayName="Create Form Task"
+            TaskTitle="[in_TaskTitle]" TaskPriority="High" TaskCatalog="{x:Null}"
+            UserNameOrEmail="{x:Null}"
+            EnableDynamicForms="True" DynamicFormPath="Forms/gauntlet-brief.json" GenerateInputFields="False"
+            AutoCompleteOutcome="{x:Null}" BucketFolderPath="{x:Null}" BucketName="{x:Null}" BulkFormLayout="{x:Null}"
+            FormLayout="{x:Null}" Group="{x:Null}" Labels="{x:Null}" ReassignUser="{x:Null}" TaskOutput="{x:Null}"
+            TimeoutMs="{x:Null}" TimerDuration="{x:Null}" ExternalTag="{x:Null}"
+            BulkFormLayoutGuid="d64ad58c-5eaa-457a-a35a-499d997e882b" FormLayoutGuid="8636be98-5669-4626-8bfb-19feda1c1c4a"
+            EnableBulkEdit="False" EnableV2="False" EndCriteria="TaskAssigned" Outcome="Notify"
+            StartCriteria="TaskCreated" TaskTimerEnabled="False">
+            <upaf:CreateFormTask.FormData>
+                <scg:Dictionary x:TypeArguments="x:String, Argument">
+                    <InArgument x:TypeArguments="x:String" x:Key="persona">[in_persona]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="severity">[in_severity]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="owasp">[in_owasp]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="mitre">[in_mitre]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="summary">[in_summary]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="tactic">[in_tactic]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="rule_violated">[in_rule_violated]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="break_quote">[in_break_quote]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="patch_section">[in_patch_section]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="patch">[in_patch]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="rationale">[in_rationale]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="tests">[in_tests]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="apply_command">[in_apply_command]</InArgument>
+                    <InArgument x:TypeArguments="x:String" x:Key="agent_prompt_url">[in_agent_prompt_url]</InArgument>
+                </scg:Dictionary>
+            </upaf:CreateFormTask.FormData>
+        </upaf:CreateFormTask>
+    </Sequence>
+</Activity>

@@ -1,6 +1,5 @@
 import "./Sidebar.css";
 import type { ReactNode } from "react";
-import { LiveStatus } from "./LiveStatus";
 import { VoiceToggle } from "./VoiceToggle";
 import { ShieldIcon, SwordIcon } from "./Icon";
 
@@ -52,7 +51,7 @@ export function Sidebar({ active, onNavigate }: Props) {
       <div className="sidebar-brand">
         <img
           className="sidebar-logo"
-          src="./gauntlet_logo_mark.png"
+          src="./gauntlet_gloves.svg"
           alt=""
           aria-hidden="true"
         />
@@ -89,7 +88,6 @@ export function Sidebar({ active, onNavigate }: Props) {
       </nav>
 
       <div className="sidebar-footer">
-        <LiveStatus />
         <VoiceToggle />
       </div>
     </aside>

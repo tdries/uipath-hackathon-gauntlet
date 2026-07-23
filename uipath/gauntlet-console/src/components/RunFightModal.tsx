@@ -11,6 +11,16 @@ import {
   voiceIsEnabled,
 } from "../lib/voice";
 import { ShieldIcon, SwordIcon } from "./Icon";
+import {
+  runFightViaDeployedAgents,
+  fileBreachToActionCenter,
+  fileToTestManager,
+  getStoredKey,
+  type FightTurn,
+  type FightVerdict,
+} from "../lib/fightRun";
+import { setStoredKey } from "../lib/coachRun";
+import { useUiPath, getFolderId, actionCenterTaskUrl } from "../lib/uipath";
 
 interface Props {
   open: boolean;
@@ -78,7 +88,7 @@ function findFight(
   );
 }
 
-type Tab = "single" | "batch";
+type Tab = "single" | "batch" | "live";
 
 export function RunFightModal({ open, onClose }: Props) {
   const [tab, setTab] = useState<Tab>("single");
@@ -108,6 +118,13 @@ export function RunFightModal({ open, onClose }: Props) {
             >
               Batch (up to {BATCH_CAP})
             </button>
+            <button
+              className={`run-tab ${tab === "live" ? "active" : ""}`}
+              onClick={() => setTab("live")}
+              title="Run a real fight against the deployed UiPath agents (Orchestrator jobs)"
+            >
+              ⚡ Live (UiPath)
+            </button>
           </div>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
@@ -116,6 +133,7 @@ export function RunFightModal({ open, onClose }: Props) {
 
         {tab === "single" && <SinglePanel onClose={onClose} />}
         {tab === "batch" && <BatchPanel onClose={onClose} />}
+        {tab === "live" && <LiveFightPanel onClose={onClose} />}
       </div>
     </div>
   );
@@ -203,7 +221,7 @@ function SinglePanel({ onClose }: { onClose: () => void }) {
         <p className="modal-lede">
           Pick a red persona, a scenario, and the bank agent's policy posture.
           The console will replay the saved fight for those parameters from
-          the corpus - same conversation, same verdict, same evidence.
+          the corpus. Same conversation, same verdict, same evidence.
         </p>
 
         <div className="config-grid">
@@ -332,7 +350,10 @@ type BatchPhase = "configure" | "running" | "complete";
 interface BatchRowState {
   pair: BatchPair;
   fight: FightRecord | null;
-  status: "queued" | "running" | "done" | "skipped";
+  status: "queued" | "running" | "done" | "skipped" | "error";
+  liveVerdict?: FightVerdict | null; // set when run live against the deployed agents
+  errorMsg?: string;
+  filedTaskId?: number; // Action Center task id, when a Red win was auto-filed
 }
 
 function listAllPairs(records: FightRecord[], mode: BlueMode): BatchPair[] {
@@ -362,6 +383,12 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
   const [rows, setRows] = useState<BatchRowState[]>([]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const tickRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Live-batch (deployed agents) state.
+  const [engine, setEngine] = useState<"replay" | "live">("replay");
+  const [keyInput, setKeyInput] = useState("");
+  const { sdk, status: authStatus } = useUiPath();
+  const abortRef = useRef<AbortController | null>(null);
+  const hasStoredKey = !!getStoredKey();
 
   // When the user switches blue modes, drop selections that no longer
   // exist in that mode's corpus.
@@ -377,6 +404,7 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     return () => {
       if (tickRef.current) clearTimeout(tickRef.current);
+      abortRef.current?.abort();
     };
   }, []);
 
@@ -430,7 +458,78 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
     setRows(initial);
     setPhase("running");
     setExpandedId(null);
-    runNext(initial, 0);
+    if (engine === "live") runLiveBatch(initial);
+    else runNext(initial, 0);
+  };
+
+  // Live batch: run each selected pair against the DEPLOYED agents in
+  // sequence (each fight is several Orchestrator jobs), filling the table
+  // with real verdicts as they complete.
+  const runLiveBatch = async (initial: BatchRowState[]) => {
+    const apiKey = keyInput.trim() || getStoredKey() || "";
+    const fail = (msg: string) => {
+      setRows(initial.map((r) => ({ ...r, status: "error", errorMsg: msg })));
+      setPhase("complete");
+    };
+    if (!apiKey) return fail("Add your Anthropic API key (it powers Red).");
+    if (!sdk) return fail("Sign in to UiPath to run live against the deployed agents.");
+    if (keyInput.trim()) setStoredKey(keyInput.trim());
+    const ac = new AbortController();
+    abortRef.current = ac;
+    let folderId: number | null = null;
+    try {
+      folderId = await getFolderId(sdk);
+    } catch {
+      folderId = null;
+    }
+    if (folderId === null) return fail("Could not resolve folder ID (needs the OR.Folders.Read scope).");
+
+    let state = initial;
+    for (let i = 0; i < state.length; i++) {
+      if (ac.signal.aborted) break;
+      state = state.map((r, idx) => (idx === i ? { ...r, status: "running" } : r));
+      setRows(state);
+      try {
+        const outcome = await runFightViaDeployedAgents(
+          {
+            apiKey,
+            personaName: state[i].pair.persona,
+            scenarioPattern: state[i].pair.scenario,
+            why: `${state[i].pair.persona} attacks MetroBank CSR`,
+            blueMode: "standard",
+            signal: ac.signal,
+          },
+          sdk,
+          folderId
+        );
+        let filedTaskId: number | undefined;
+        if (outcome.verdict.winner === "red") {
+          try {
+            filedTaskId = await fileBreachToActionCenter(sdk, folderId, {
+              persona: state[i].pair.persona,
+              scenario: state[i].pair.scenario,
+              verdict: outcome.verdict,
+              turns: outcome.turns,
+              ranAtIso: new Date().toISOString(),
+            });
+          } catch {
+            /* filing is best-effort; keep the verdict even if it fails */
+          }
+        }
+        state = state.map((r, idx) =>
+          idx === i ? { ...r, status: "done", liveVerdict: outcome.verdict, filedTaskId } : r
+        );
+      } catch (e) {
+        if ((e as Error).name === "AbortError" || ac.signal.aborted) break;
+        state = state.map((r, idx) =>
+          idx === i
+            ? { ...r, status: "error", errorMsg: e instanceof Error ? e.message : String(e) }
+            : r
+        );
+      }
+      setRows(state);
+    }
+    setPhase("complete");
   };
 
   const runNext = (state: BatchRowState[], idx: number) => {
@@ -457,6 +556,7 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
 
   const reset = () => {
     if (tickRef.current) clearTimeout(tickRef.current);
+    abortRef.current?.abort();
     setPhase("configure");
     setRows([]);
     setExpandedId(null);
@@ -467,7 +567,7 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
       <div className="modal-body">
         <p className="modal-lede">
           Run multiple adversarial calls back-to-back against the same blue
-          posture - the regression-suite view in miniature. Capped at{" "}
+          posture. The regression-suite view in miniature. Capped at{" "}
           <strong>{BATCH_CAP}</strong> fights to keep each batch quick.
         </p>
 
@@ -486,6 +586,46 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
             ))}
           </div>
         </div>
+
+        <div className="mode-picker" style={{ marginTop: 4 }}>
+          <span className="config-label">Engine</span>
+          <div className="mode-cards">
+            <button
+              className={`mode-card ${engine === "replay" ? "active" : ""} mode-ok`}
+              onClick={() => setEngine("replay")}
+            >
+              <div className="mode-card-label">Replay (corpus)</div>
+              <div className="mode-card-desc">Fast playback of the saved fights. No tenant calls.</div>
+            </button>
+            <button
+              className={`mode-card ${engine === "live" ? "active" : ""} mode-warn`}
+              onClick={() => setEngine("live")}
+            >
+              <div className="mode-card-label">⚡ Live (deployed agents)</div>
+              <div className="mode-card-desc">
+                Runs each fight for real against MetroBankCSR + RefereeAgent as
+                Orchestrator jobs. About 1 to 2 minutes per fight.
+              </div>
+            </button>
+          </div>
+        </div>
+
+        {engine === "live" && authStatus !== "ready" && (
+          <div className="batch-empty">
+            Not signed in to UiPath. Open this app from the portal (Apps -&gt; gauntletapp) to run live.
+          </div>
+        )}
+
+        {engine === "live" && !hasStoredKey && (
+          <input
+            className="reg-key"
+            type="password"
+            placeholder="Anthropic API key (sk-ant-…, stays in this browser — powers Red)"
+            value={keyInput}
+            onChange={(e) => setKeyInput(e.target.value)}
+            style={{ margin: "4px 0" }}
+          />
+        )}
 
         <div className="batch-pickbar">
           <span className="config-label">
@@ -551,9 +691,10 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
           <button
             className="btn btn-brand"
             onClick={launchBatch}
-            disabled={selected.size === 0}
+            disabled={selected.size === 0 || (engine === "live" && authStatus !== "ready")}
           >
-            Run batch ({selected.size} fight{selected.size === 1 ? "" : "s"})
+            {engine === "live" ? "⚡ Run live batch" : "Run batch"} ({selected.size} fight
+            {selected.size === 1 ? "" : "s"})
           </button>
         </div>
       </div>
@@ -583,11 +724,12 @@ function BatchPanel({ onClose }: { onClose: () => void }) {
 }
 
 function BatchSummary({ rows, mode }: { rows: BatchRowState[]; mode: BlueMode }) {
+  const vof = (r: BatchRowState) => r.liveVerdict ?? r.fight?.verdict;
   const total = rows.length;
   const done = rows.filter((r) => r.status === "done").length;
-  const blue = rows.filter((r) => r.status === "done" && r.fight?.verdict.winner === "blue").length;
-  const red = rows.filter((r) => r.status === "done" && r.fight?.verdict.winner === "red").length;
-  const draw = rows.filter((r) => r.status === "done" && r.fight?.verdict.winner === "draw").length;
+  const blue = rows.filter((r) => r.status === "done" && vof(r)?.winner === "blue").length;
+  const red = rows.filter((r) => r.status === "done" && vof(r)?.winner === "red").length;
+  const draw = rows.filter((r) => r.status === "done" && vof(r)?.winner === "draw").length;
   return (
     <div className="batch-summary">
       <div>
@@ -613,7 +755,7 @@ function BatchSummary({ rows, mode }: { rows: BatchRowState[]; mode: BlueMode })
         </div>
       </div>
       <div>
-        <div className="batch-summary-label">- Draws</div>
+        <div className="batch-summary-label">Draws</div>
         <div className="batch-summary-value">{draw}</div>
       </div>
     </div>
@@ -672,13 +814,15 @@ function Row({
   open: boolean;
   onToggle: () => void;
 }) {
-  const fight = row.fight;
-  const winner = fight?.verdict.winner;
+  const v = row.liveVerdict ?? row.fight?.verdict;
+  const winner = v?.winner;
+  const canExpand = row.status === "done" && !!row.fight && !row.liveVerdict; // replay rows only
   return (
     <>
       <tr
         className={`batch-row batch-row-${row.status}`}
-        onClick={() => row.status === "done" && fight && onToggle()}
+        onClick={() => canExpand && onToggle()}
+        title={row.liveVerdict?.notes || row.errorMsg || undefined}
       >
         <td className="batch-row-num">{index + 1}</td>
         <td>
@@ -688,6 +832,7 @@ function Row({
         <td>
           {row.status === "queued" && <span className="tag tag-neutral">queued</span>}
           {row.status === "running" && <span className="tag tag-warn">running…</span>}
+          {row.status === "error" && <span className="tag tag-red">error</span>}
           {row.status === "done" && winner === "blue" && (
             <span className="tag tag-ok">
               <ShieldIcon size={10} /> BLUE held
@@ -699,22 +844,351 @@ function Row({
             </span>
           )}
           {row.status === "done" && winner === "draw" && (
-            <span className="tag tag-warn">- draw</span>
+            <span className="tag tag-warn">draw</span>
           )}
-          {row.status === "done" && !fight && (
-            <span className="tag tag-neutral">no replay data</span>
+          {row.status === "done" && !v && (
+            <span className="tag tag-neutral">no data</span>
           )}
+          {row.filedTaskId ? (
+            <a
+              href={actionCenterTaskUrl(row.filedTaskId)}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              style={{ marginLeft: 6, fontSize: 11, whiteSpace: "nowrap" }}
+              title="Filed to Action Center"
+            >
+              → AC #{row.filedTaskId} ↗
+            </a>
+          ) : null}
         </td>
-        <td className="right">{fight?.verdict.blue_score ?? "-"}</td>
-        <td className="right">{fight?.verdict.red_score ?? "-"}</td>
+        <td className="right">{v?.blue_score ?? "-"}</td>
+        <td className="right">{v?.red_score ?? "-"}</td>
       </tr>
-      {open && fight && (
+      {open && canExpand && row.fight && (
         <tr className="batch-detail-row">
           <td colSpan={5}>
-            <FightDetail fight={fight} />
+            <FightDetail fight={row.fight} />
           </td>
         </tr>
       )}
     </>
+  );
+}
+
+// ---------- Live fight vs the deployed UiPath agents ----------
+
+type LivePhase = "idle" | "running" | "done" | "error";
+
+type FileState =
+  | { kind: "idle" }
+  | { kind: "creating" }
+  | { kind: "created"; taskId: number; url: string }
+  | { kind: "error"; message: string };
+
+function LiveFightPanel({ onClose }: { onClose: () => void }) {
+  const personas = useMemo(() => listPersonas(corpus), []);
+  const [persona, setPersona] = useState(personas[0]?.name ?? "");
+  const [scenario, setScenario] = useState(personas[0]?.scenarios[0] ?? "");
+  const [keyInput, setKeyInput] = useState("");
+  const [phase, setPhase] = useState<LivePhase>("idle");
+  const [turns, setTurns] = useState<FightTurn[]>([]);
+  const [verdict, setVerdict] = useState<FightVerdict | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [fileState, setFileState] = useState<FileState>({ kind: "idle" });
+  const abortRef = useRef<AbortController | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const { sdk, status: authStatus } = useUiPath();
+  const hasStoredKey = !!getStoredKey();
+  const [tmState, setTmState] = useState<{
+    kind: "idle" | "creating" | "created" | "error";
+    key?: string;
+    message?: string;
+  }>({ kind: "idle" });
+
+  const addToTestManager = async () => {
+    if (!verdict || !sdk) {
+      setTmState({ kind: "error", message: "Sign in to UiPath first." });
+      return;
+    }
+    setTmState({ kind: "creating" });
+    try {
+      const c = await fileToTestManager(sdk, {
+        persona,
+        scenario,
+        blueMode: "standard",
+        verdict,
+        turns,
+      });
+      setTmState({ kind: "created", key: c.key });
+    } catch (e) {
+      setTmState({ kind: "error", message: e instanceof Error ? e.message : String(e) });
+    }
+  };
+
+  useEffect(() => {
+    const p = personas.find((p) => p.name === persona);
+    if (p && !p.scenarios.includes(scenario)) setScenario(p.scenarios[0] ?? "");
+  }, [persona, personas, scenario]);
+  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [turns, verdict]);
+
+  const run = async () => {
+    const apiKey = keyInput.trim() || getStoredKey() || "";
+    if (!apiKey) {
+      setError("Add your Anthropic API key (runs the Red attacker; stays in this browser).");
+      setPhase("error");
+      return;
+    }
+    if (!sdk) {
+      setError("Sign in to UiPath to run against the deployed agents.");
+      setPhase("error");
+      return;
+    }
+    if (keyInput.trim()) setStoredKey(keyInput.trim());
+    setPhase("running");
+    setTurns([]);
+    setVerdict(null);
+    setError(null);
+    setFileState({ kind: "idle" });
+    const ac = new AbortController();
+    abortRef.current = ac;
+    try {
+      const folderId = await getFolderId(sdk);
+      if (folderId === null) {
+        throw new Error("Could not resolve folder ID (needs the OR.Folders.Read scope).");
+      }
+      const outcome = await runFightViaDeployedAgents(
+        {
+          apiKey,
+          personaName: persona,
+          scenarioPattern: scenario,
+          why: `${persona} attacks MetroBank CSR`,
+          blueMode: "standard",
+          onTurn: (t) => setTurns((prev) => [...prev, t]),
+          signal: ac.signal,
+        },
+        sdk,
+        folderId
+      );
+      setVerdict(outcome.verdict);
+      setPhase("done");
+      // A landed attack (Red win) becomes an Action Center fix task — the
+      // browser-native half of the flywheel (Test Manager stays CLI-driven).
+      if (outcome.verdict.winner === "red") {
+        setFileState({ kind: "creating" });
+        try {
+          const id = await fileBreachToActionCenter(sdk, folderId, {
+            persona,
+            scenario,
+            verdict: outcome.verdict,
+            turns: outcome.turns,
+            ranAtIso: new Date().toISOString(),
+          });
+          setFileState({ kind: "created", taskId: id, url: id ? actionCenterTaskUrl(id, folderId) : "" });
+        } catch (e) {
+          setFileState({ kind: "error", message: e instanceof Error ? e.message : String(e) });
+        }
+      }
+    } catch (e) {
+      if ((e as Error).name === "AbortError") {
+        setPhase("idle");
+        return;
+      }
+      setError(e instanceof Error ? e.message : String(e));
+      setPhase("error");
+    }
+  };
+
+  const stop = () => abortRef.current?.abort();
+
+  const running = phase === "running";
+  const pass = verdict?.winner === "blue";
+  const fail = verdict?.winner === "red";
+
+  return (
+    <div className="modal-body">
+      <p className="modal-lede">
+        Run a <strong>real</strong> fight against the deployed UiPath agents: Red
+        runs from your browser, while <strong>MetroBank CSR (Blue)</strong> and the{" "}
+        <strong>Referee</strong> are the live Agent Builder agents in{" "}
+        <code>Shared/Gauntlet</code>, invoked as Orchestrator jobs. Each turn is a
+        real job, so a round takes a minute or two.
+      </p>
+
+      {authStatus !== "ready" && (
+        <div className="reg-error" style={{ marginBottom: 12 }}>
+          <span className="tag tag-warn">UiPath</span> Not signed in — open this app
+          from the UiPath portal (Apps → gauntletapp) so it can start jobs as you.
+        </div>
+      )}
+
+      <div className="config-grid">
+        <div className="config-field">
+          <label>Red persona</label>
+          <select value={persona} disabled={running} onChange={(e) => setPersona(e.target.value)}>
+            {personas.map((p) => (
+              <option key={p.name} value={p.name}>{p.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="config-field">
+          <label>Scenario</label>
+          <select value={scenario} disabled={running} onChange={(e) => setScenario(e.target.value)}>
+            {(personas.find((p) => p.name === persona)?.scenarios ?? []).map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {!hasStoredKey && (
+        <input
+          className="reg-key"
+          type="password"
+          placeholder="Anthropic API key (sk-ant-…, stays in this browser — powers Red)"
+          value={keyInput}
+          disabled={running}
+          onChange={(e) => setKeyInput(e.target.value)}
+          style={{ marginTop: 10 }}
+        />
+      )}
+
+      {(turns.length > 0 || running) && (
+        <div
+          ref={scrollRef}
+          style={{
+            marginTop: 14,
+            maxHeight: 320,
+            overflowY: "auto",
+            border: "1px solid var(--line)",
+            borderRadius: 8,
+            padding: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+          }}
+        >
+          {turns.map((t, i) => (
+            <div
+              key={i}
+              style={{
+                alignSelf: t.speaker === "red" ? "flex-start" : "flex-end",
+                maxWidth: "85%",
+                background: t.speaker === "red"
+                  ? "var(--red-soft, rgba(220,60,60,.08))"
+                  : "var(--blue-soft, rgba(60,120,220,.08))",
+                border: "1px solid var(--line)",
+                borderRadius: 8,
+                padding: "6px 10px",
+              }}
+            >
+              <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 2 }}>
+                {t.speaker === "red" ? persona : "Cara · deployed agent"}
+              </div>
+              <div style={{ fontSize: 13, whiteSpace: "pre-wrap" }}>{t.content}</div>
+            </div>
+          ))}
+          {running && (
+            <div style={{ opacity: 0.6, fontSize: 12 }}>
+              running… (each turn is a real Orchestrator job)
+            </div>
+          )}
+        </div>
+      )}
+
+      {verdict && (
+        <div
+          className={`reg-verdict ${pass ? "reg-pass" : fail ? "reg-fail" : "reg-draw"}`}
+          style={{ marginTop: 12 }}
+        >
+          <div className="reg-verdict-head">
+            {pass ? (
+              <><ShieldIcon size={16} /> BLUE held</>
+            ) : fail ? (
+              <><SwordIcon size={16} /> RED won</>
+            ) : (
+              <>Inconclusive</>
+            )}
+            <span className="reg-scores">
+              Blue {verdict.blue_score} · Red {verdict.red_score}
+            </span>
+          </div>
+          {verdict.policy_breaches.length > 0 && (
+            <ul className="reg-breaches">
+              {verdict.policy_breaches.map((b, i) => (<li key={i}>{b}</li>))}
+            </ul>
+          )}
+          <div className="reg-notes">{verdict.notes}</div>
+          <div className="reg-file" style={{ marginTop: 8 }}>
+            {tmState.kind === "created" ? (
+              <>
+                <span className="tag tag-ok">
+                  ✓ Test Manager case created{tmState.key ? ` (${tmState.key})` : ""}
+                </span>
+                <a href={tenant.testManagerProject} target="_blank" rel="noreferrer">
+                  Open in Test Manager ↗
+                </a>
+              </>
+            ) : (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={addToTestManager}
+                disabled={tmState.kind === "creating"}
+                title="Create a Test Manager regression case from this fight"
+              >
+                {tmState.kind === "creating" ? "Adding…" : "Add to Test Manager"}
+              </button>
+            )}
+            {tmState.kind === "error" && (
+              <span className="reg-file-err">{tmState.message}</span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {verdict?.winner === "red" && fileState.kind !== "idle" && (
+        <div className="reg-file" style={{ marginTop: 10 }}>
+          {fileState.kind === "created" ? (
+            <>
+              <span className="tag tag-ok">
+                ✓ Breach filed to Action Center
+                {fileState.taskId ? ` #${fileState.taskId}` : ""}
+              </span>
+              {fileState.url && (
+                <a href={fileState.url} target="_blank" rel="noreferrer" style={{ marginLeft: 8 }}>
+                  Open in Action Center ↗
+                </a>
+              )}
+            </>
+          ) : fileState.kind === "creating" ? (
+            <span className="tag tag-warn">Filing breach to Action Center…</span>
+          ) : fileState.kind === "error" ? (
+            <span className="reg-file-err">
+              Could not file to Action Center: {fileState.message}
+            </span>
+          ) : null}
+        </div>
+      )}
+
+      {error && (
+        <div className="reg-error" style={{ marginTop: 12 }}>
+          <span className="tag tag-red">Error</span> {error}
+        </div>
+      )}
+
+      <div className="modal-actions">
+        <button className="btn btn-ghost" onClick={onClose}>Close</button>
+        {running ? (
+          <button className="btn btn-outline" onClick={stop}>Stop</button>
+        ) : (
+          <button className="btn btn-brand" onClick={run} disabled={authStatus !== "ready"}>
+            {phase === "done" ? "Run another live fight" : "⚡ Run live fight"}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

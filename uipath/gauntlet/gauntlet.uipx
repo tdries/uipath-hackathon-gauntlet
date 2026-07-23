@@ -1,7 +1,7 @@
 {
     "DocVersion": "1.0.0",
     "StudioMinVersion": "2025.10.0",
-    "SolutionId": "cf351ed9-c9ba-4aa2-ceb6-08deb24d397f",
+    "SolutionId": "a0952f10-b35a-4df1-7f09-08dee7ea4309",
     "Projects": [
         {
             "Type": "Agent",
@@ -22,6 +22,11 @@
             "Type": "Agent",
             "ProjectRelativePath": "RefereeAgent/project.uiproj",
             "Id": "d142cc68-7003-47a6-9eb8-93cf48f49956"
+        },
+        {
+            "Type": "Flow",
+            "ProjectRelativePath": "FightRound/project.uiproj",
+            "Id": "08415d2d-6dbf-436c-ad3a-eb8336f25d38"
         }
     ]
 }

@@ -33,6 +33,7 @@ from gauntlet.personas import (
     load_scenario,
 )
 from gauntlet.runner import RUNS_DIR, aggregate_runs_to_jsonl, run_fight, save_run
+from gauntlet.test_manager import TestManagerError, persist_fight
 
 
 def _load_dotenv() -> None:
@@ -108,12 +109,22 @@ def cmd_scenarios() -> None:
         "/ external (LangGraph third-party deployment, no tool access)."
     ),
 )
+@click.option(
+    "--test-manager/--no-test-manager",
+    default=False,
+    show_default=True,
+    help=(
+        "On a red win (a breach), auto-file a UiPath Test Manager regression "
+        "case into the GAUNTLET project. Needs `uip login`; best-effort."
+    ),
+)
 def cmd_fight(
     persona_name: str,
     scenario_name: str,
     max_turns: int,
     save: bool,
     blue_mode: str,
+    test_manager: bool,
 ) -> None:
     """Run one fight: red persona vs blue (MetroBank CSR)."""
     persona = load_persona(persona_name)
@@ -172,6 +183,17 @@ def cmd_fight(
     if save:
         path = save_run(transcript, verdict, label=persona.name)
         console.print(f"[dim]saved → {path}[/dim]")
+
+    # A breach becomes a permanent regression: file it to Test Manager the
+    # moment it happens. Best-effort so a missing login never fails the fight.
+    if test_manager and verdict.winner == "red":
+        try:
+            case_key = persist_fight(transcript, verdict)
+            console.print(
+                f"[green]→ Test Manager regression filed[/green] [dim]case {case_key}[/dim]"
+            )
+        except TestManagerError as exc:
+            console.print(f"[yellow]Test Manager skipped:[/yellow] [dim]{exc}[/dim]")
 
 
 @main.command("batch")

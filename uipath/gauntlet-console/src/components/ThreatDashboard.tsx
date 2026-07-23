@@ -102,7 +102,7 @@ export function ThreatDashboard() {
                           <span
                             className="tag tag-mini"
                             style={{ marginLeft: 6, background: "var(--primary)", color: "white" }}
-                            title="Third-party framework (LangGraph) - proves the test cloud is framework-neutral"
+                            title="Third-party framework (LangGraph): proves the test cloud is framework-neutral"
                           >
                             3rd-party
                           </span>

@@ -18,7 +18,7 @@ const PROPS = [
     body: (
       <>
         An autonomous Red agent that probes Blue with multi-turn social
-        engineering - grandma scams, fake CEOs, regulator impersonations, prompt
+        engineering: grandma scams, fake CEOs, regulator impersonations, prompt
         injections. Every successful breach is tagged against{" "}
         <strong>OWASP LLM Top 10 + MITRE ATLAS</strong> and becomes a regression
         test in your Test Manager project.
@@ -48,7 +48,7 @@ export function ValueProps() {
           <p className="section-lede">
             UiPath ships world-class <em>functional</em> agent testing. GAUNTLET
             is the <em>adversarial</em> layer they don't ship. Both run side-by-side
-            in the same tenant - one catches "did the agent do the right thing,"
+            in the same tenant. One catches "did the agent do the right thing,"
             the other catches "can someone make it do the wrong thing."
           </p>
         </div>

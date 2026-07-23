@@ -121,7 +121,7 @@ export function Wizard({ actions }: { actions: WizardActions }) {
               <span className="wizard-eyebrow">First time here?</span>
               <h2>Four things to try, in order</h2>
               <p className="wizard-lede">
-                You can poke around freely - but this guide walks you straight
+                You can poke around freely, but this guide walks you straight
                 to the demo moments judges will care about. Two minutes.
               </p>
             </div>

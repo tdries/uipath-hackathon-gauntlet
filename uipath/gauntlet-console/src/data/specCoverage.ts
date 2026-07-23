@@ -130,12 +130,12 @@ function buildMemory(): SpecModule {
     description:
       "Persistent-memory injection, context displacement, RAG poisoning, state confusion across multi-turn sessions.",
     why_or_caveat:
-      "Not applicable to MetroBank CSR - the system under test has no long-term memory or RAG retrieval. Each call is a fresh context window. Module activates the moment we point GAUNTLET at a memory-backed agent.",
+      "Not applicable to MetroBank CSR. The system under test has no long-term memory or RAG retrieval. Each call is a fresh context window. Module activates the moment we point GAUNTLET at a memory-backed agent.",
     status: "n_a",
     evidence_count: 0,
     red_wins: 0,
     metrics: [
-      { label: "RAG store?", value: "none", sub: "stateless CSR - no memory surface" },
+      { label: "RAG store?", value: "none", sub: "stateless CSR, no memory surface" },
     ],
   };
 }
@@ -160,7 +160,7 @@ function buildMultiAgent(): SpecModule {
     metrics: [
       { label: "Agents in graph", value: "3", sub: "Red · Blue · Referee" },
       { label: "Orchestrations run", value: String(orchestrationCovered), sub: "Maestro Flow invocations" },
-      { label: "Cross-agent probes", value: "0", sub: "roadmap - payloads via Referee channel" },
+      { label: "Cross-agent probes", value: "0", sub: "roadmap: payloads via Referee channel" },
     ],
   };
 }
@@ -192,14 +192,14 @@ function buildRobustness(): SpecModule {
     number: "§6",
     name: "Robustness & Regression Testing",
     description:
-      "4 blue modes (standard, lenient, naive, external LangGraph) attacked by the same persona library - every fight is differential by construction.",
+      "4 blue modes (standard, lenient, naive, external LangGraph) attacked by the same persona library. Every fight is differential by construction.",
     why_or_caveat:
-      "Coverage is real. CI/CD regression gate (block deploy if ASR > threshold) is a roadmap item - currently surfaced manually via the Threat Dashboard.",
+      "Coverage is real. CI/CD regression gate (block deploy if ASR > threshold) is a roadmap item, currently surfaced manually via the Threat Dashboard.",
     status: "covered",
     evidence_count: corpus.length,
     red_wins: corpus.filter((f) => f.verdict.winner === "red").length,
     metrics: [
-      { label: "robustness_score", value: pct(1 - totalASR, 1), sub: "1 - weighted_mean(ASR)" },
+      { label: "robustness_score", value: pct(1 - totalASR, 1), sub: "1 minus weighted_mean(ASR)" },
       {
         label: "defense_effectiveness",
         value: defenseEff === null ? "-" : pct(defenseEff, 1),
@@ -264,7 +264,7 @@ function buildAttackSurface(): SpecModule {
     description:
       "Topology mapping of agent graphs, tool schemas, trust boundaries. Generates the catalog GAUNTLET attacks against.",
     why_or_caveat:
-      "Our SUT (MetroBank CSR) has a known fixed tool surface - verify, balance, transfer, escalate - so discovery is hand-authored, not crawled. The discovery engine activates the moment we point GAUNTLET at an unknown agent (e.g., a customer's deployment).",
+      "Our SUT (MetroBank CSR) has a known fixed tool surface (verify, balance, transfer, escalate) so discovery is hand-authored, not crawled. The discovery engine activates the moment we point GAUNTLET at an unknown agent (e.g., a customer's deployment).",
     status: "n_a",
     evidence_count: 4,
     red_wins: 0,

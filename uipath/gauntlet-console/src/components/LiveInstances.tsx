@@ -191,7 +191,7 @@ export function LiveInstances() {
             <h2>What's running in your tenant right now</h2>
             <p className="section-lede">
               The Maestro flows you've deployed and how many runs each has
-              done. Pulled live from your tenant - no mock data, no static
+              done. Pulled live from your tenant, no mock data, no static
               snapshot.
             </p>
           </div>
@@ -212,7 +212,7 @@ export function LiveInstances() {
         )}
         {state.kind === "unauthed" && (
           <div className="instances-state instances-warn">
-            Sign-in needed - the live panel will populate once UiPath OAuth
+            Sign-in needed. The live panel will populate once UiPath OAuth
             completes.
           </div>
         )}
@@ -342,7 +342,7 @@ export function LiveInstances() {
 
             {state.instances.length === 0 && state.processes.length > 0 && (
               <p className="instances-empty-note">
-                No instances yet - start a run from{" "}
+                No instances yet. Start a run from{" "}
                 <a href={tenant.maestroRoot} target="_blank" rel="noreferrer">
                   Maestro
                 </a>{" "}

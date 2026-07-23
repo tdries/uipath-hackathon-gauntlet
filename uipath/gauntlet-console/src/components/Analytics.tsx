@@ -52,7 +52,7 @@ export function Analytics({ onOpenPersona }: AnalyticsProps = {}) {
             <SystemUnderTest variant="badge" />
             {first && last && first !== last && (
               <p className="analytics-window">
-                {shortDate(first)} - {shortDate(last)}
+                {shortDate(first)} to {shortDate(last)}
               </p>
             )}
           </div>
@@ -87,7 +87,7 @@ export function Analytics({ onOpenPersona }: AnalyticsProps = {}) {
             <CoverageLine data={trajectory} />
           </Card>
 
-          <Card title="Robustness score" sub="1 - ASR, all modes combined">
+          <Card title="Robustness score" sub="1 minus ASR, all modes combined">
             <BigStat
               value={(k.robustness * 100).toFixed(1) + "%"}
               footer={`${k.red} successful / ${k.total} total`}

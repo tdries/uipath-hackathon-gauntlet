@@ -1,0 +1,38 @@
+{
+  "docVersion": "1.0.0",
+  "resource": {
+    "name": "FightRound",
+    "kind": "process",
+    "type": "flow",
+    "apiVersion": "orchestrator.uipath.com/v1",
+    "projectKey": "08415d2d-6dbf-436c-ad3a-eb8336f25d38",
+    "dependencies": [
+      {
+        "kind": "package",
+        "name": "FightRound"
+      }
+    ],
+    "runtimeDependencies": [],
+    "folders": [
+      {
+        "fullyQualifiedName": "solution_folder"
+      }
+    ],
+    "spec": {
+      "type": "Flow",
+      "name": "FightRound",
+      "package": {
+        "key": "cf6d8902-263c-459c-b2f3-bf92190b3517"
+      },
+      "packageName": "gauntlet.flow.FightRound",
+      "targetFrameworkValue": "Portable",
+      "retentionAction": "Delete",
+      "retentionPeriod": 30,
+      "staleRetentionAction": "Delete",
+      "staleRetentionPeriod": 180
+    },
+    "locks": [],
+    "key": "c6670e00-fc7e-4d7f-be64-7fd3319aa5b2",
+    "files": []
+  }
+}

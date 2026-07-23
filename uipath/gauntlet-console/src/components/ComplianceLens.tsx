@@ -79,7 +79,7 @@ export function ComplianceLens() {
             <span className="cl-eyebrow">Compliance</span>
             <h2>Does this meet your auditors' standards?</h2>
             <p className="section-lede">
-              The standards procurement teams actually ask about - ISO 42001,
+              The standards procurement teams actually ask about: ISO 42001,
               NIST AI RMF, and four more. Pick a framework: each card lists
               the controls we touch, the honest status, and a "Show evidence"
               link that scrolls to the exact place in this console where the

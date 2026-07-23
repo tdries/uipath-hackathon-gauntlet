@@ -41,7 +41,7 @@ export function Coverage() {
   return (
     <section className="coverage-section" id="coverage">
       <div className="wrap">
-        <h2>Coverage - OWASP LLM Top 10 &amp; MITRE ATLAS</h2>
+        <h2>Coverage: OWASP LLM Top 10 &amp; MITRE ATLAS</h2>
         <p className="section-lede">
           Compliance buyers grade adversarial testing by these taxonomies. Each
           persona declares which classes of risk it exercises so we can show

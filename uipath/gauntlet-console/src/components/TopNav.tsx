@@ -1,6 +1,5 @@
 import "./TopNav.css";
 import type { ReactNode } from "react";
-import { LiveStatus } from "./LiveStatus";
 import { VoiceToggle } from "./VoiceToggle";
 import { ShieldIcon, SwordIcon } from "./Icon";
 
@@ -33,11 +32,11 @@ export function TopNav({ active, onNavigate }: Props) {
         <button
           className="brand-mark"
           onClick={() => onNavigate("overview")}
-          aria-label="GAUNTLET - go to overview"
+          aria-label="GAUNTLET: go to overview"
         >
           <img
             className="brand-logo"
-            src="./gauntlet_logo_mark.png"
+            src="./gauntlet_gloves.svg"
             alt=""
             aria-hidden="true"
           />
@@ -64,7 +63,6 @@ export function TopNav({ active, onNavigate }: Props) {
         </ul>
         <div className="topnav-spacer" />
         <VoiceToggle />
-        <LiveStatus />
       </div>
     </nav>
   );

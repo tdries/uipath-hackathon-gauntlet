@@ -21,11 +21,10 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 .sidebar-logo {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
+  width: auto;
+  height: 34px;
   flex-shrink: 0;
-  filter: drop-shadow(0 2px 4px rgba(250, 70, 22, 0.45));
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.25));
 }
 .sidebar-brand-text {
   display: flex;

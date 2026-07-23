@@ -33,7 +33,7 @@ export function CoverageMatrix() {
             <span className="cm-eyebrow">Audit posture</span>
             <h2>What kinds of attacks we test for</h2>
             <p className="section-lede">
-              Categories of adversarial testing applicable to this agent - for
+              Categories of adversarial testing applicable to this agent, for
               each one, you'll see whether we cover it today (green), partially
               cover it (amber), or have it on the roadmap (blue). Numbers come
               from the live corpus.

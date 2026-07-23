@@ -95,7 +95,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         ref: "6.1",
         name: "AI risk management",
         status: "covered",
-        evidence: `Risk-weighted Coach + analyze_coverage_gaps - ${uniquePersonas()} personas across the live attack categories with gap-score ranking.`,
+        evidence: `Risk-weighted Coach + analyze_coverage_gaps, ${uniquePersonas()} personas across the live attack categories with gap-score ranking.`,
         targetId: "coach",
       },
       {
@@ -116,7 +116,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         ref: "9.1",
         name: "Performance evaluation",
         status: "covered",
-        evidence: `robustness_score + defense_effectiveness computed live from ${fightsTotal()} fights - see Spec Coverage §6.`,
+        evidence: `robustness_score + defense_effectiveness computed live from ${fightsTotal()} fights. See Spec Coverage §6.`,
         targetId: "spec-coverage",
       },
       {
@@ -187,7 +187,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         name: "Risk treatment & response",
         status: "covered",
         evidence:
-          "Fix Recommender drafts a concrete prompt patch + regression tests + Action Center triage task - one-click handoff.",
+          "Fix Recommender drafts a concrete prompt patch + regression tests + Action Center triage task, one-click handoff.",
         targetId: "fix",
       },
       {
@@ -210,7 +210,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         ref: "6.2",
         name: "Risk identification",
         status: "covered",
-        evidence: `Coach + corpus enumeration - ${uniquePersonas()} attack personas, ${uniqueOwaspCovered()} OWASP categories tagged.`,
+        evidence: `Coach + corpus enumeration: ${uniquePersonas()} attack personas, ${uniqueOwaspCovered()} OWASP categories tagged.`,
       },
       {
         ref: "6.3",
@@ -248,18 +248,18 @@ export const FRAMEWORKS: ComplianceFramework[] = [
     short: "ISO/IEC 27001:2022",
     long: "Information Security Management System (ISMS)",
     scope:
-      "Information security controls. Most of the standard concerns infra/IAM, not the agent itself - relevant controls only.",
+      "Information security controls. Most of the standard concerns infra/IAM, not the agent itself, relevant controls only.",
     controls: [
       {
         ref: "A.5.1",
         name: "Policies for information security",
         status: "partial",
         evidence:
-          "Blue agent's bank policy is the information-security policy under test - published in Studio Web Agent Builder.",
+          "Blue agent's bank policy is the information-security policy under test, published in Studio Web Agent Builder.",
       },
       {
         ref: "A.5.24",
-        name: "Incident management - planning",
+        name: "Incident management, planning",
         status: "covered",
         evidence:
           "Fix Recommender → Action Center triage queue is the incident pipeline.",
@@ -290,7 +290,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
     id: "iso-25059",
     short: "ISO/IEC 25059:2023",
     long: "Quality model for AI systems",
-    scope: "Quality characteristics specific to AI - robustness, transparency, explainability.",
+    scope: "Quality characteristics specific to AI: robustness, transparency, explainability.",
     controls: [
       {
         ref: "Functional adequacy",
@@ -324,7 +324,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         name: "Demographic bias detection",
         status: "n_a",
         evidence:
-          "Not in scope. Bias auditing is a separate product surface - use UiPath Agent Evaluations.",
+          "Not in scope. Bias auditing is a separate product surface. Use UiPath Agent Evaluations.",
       },
     ],
   },
@@ -333,7 +333,7 @@ export const FRAMEWORKS: ComplianceFramework[] = [
     short: "ISO/IEC 27032:2023",
     long: "Cybersecurity controls",
     scope:
-      "Cyberspace security guidance. Mostly infrastructural - touches GAUNTLET only at the API boundary + supply-chain layer.",
+      "Cyberspace security guidance. Mostly infrastructural, touches GAUNTLET only at the API boundary + supply-chain layer.",
     controls: [
       {
         ref: "Supply chain",
@@ -355,14 +355,14 @@ export const FRAMEWORKS: ComplianceFramework[] = [
         name: "Network-layer attacks",
         status: "n_a",
         evidence:
-          "Not in scope - tests the agent's reasoning, not the transport layer.",
+          "Not in scope. Tests the agent's reasoning, not the transport layer.",
       },
       {
         ref: "Endpoint",
         name: "Endpoint hardening",
         status: "n_a",
         evidence:
-          "Not in scope - agent runs in UiPath; endpoint security is the host's concern.",
+          "Not in scope. Agent runs in UiPath; endpoint security is the host's concern.",
       },
     ],
   },

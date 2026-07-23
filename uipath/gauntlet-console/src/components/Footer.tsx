@@ -14,7 +14,7 @@ export function Footer() {
             <p className="footer-tagline">
               The adversarial complement to UiPath Agent Evaluations.
               <br />
-              UiPath AgentHack 2026 - Track 3 (Test Cloud).
+              UiPath AgentHack 2026 · Track 3 (Test Cloud).
             </p>
           </div>
           <div className="footer-col">

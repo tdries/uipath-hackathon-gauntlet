@@ -3,13 +3,15 @@ import { useEffect, useMemo, useState } from "react";
 import { corpus } from "../data/corpus";
 import { tenant } from "../data/tenant";
 import { OWASP, ATLAS } from "../data/taxonomy";
-import type { FightRecord, FixProposal } from "../data/types";
+import type { FightRecord, FixProposal, RegressionTest } from "../data/types";
+import { RegressionRunner } from "./RegressionRunner";
 import {
   actionCenterFolderUrl,
   actionCenterTaskUrl,
   getFolderId,
   useUiPath,
 } from "../lib/uipath";
+import { fileHardeningFormTask } from "../lib/fightRun";
 import { rememberCreatedTask } from "../lib/triageStore";
 import { computeAvss } from "../data/avss";
 import { SwordIcon } from "./Icon";
@@ -183,6 +185,63 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
     fight.transcript.utterances[fix.root_cause.break_turn];
   const { sdk } = useUiPath();
   const [create, setCreate] = useState<CreateState>({ kind: "idle" });
+  const [runningTest, setRunningTest] = useState<RegressionTest | null>(null);
+  const [apply, setApply] = useState<{
+    kind: "idle" | "creating" | "created" | "error";
+    taskId?: number;
+    url?: string;
+    message?: string;
+    formError?: string;
+  }>({ kind: "idle" });
+
+  // Governed apply: the browser cannot republish an agent, so this files an
+  // Action Center approval task carrying the patch. A human approves, then
+  // `scripts/apply_patch_to_agent.py` patches MetroBankCSR + republishes.
+  const handleApplyPatch = async () => {
+    if (!sdk) {
+      setApply({ kind: "error", message: "Sign in to UiPath to file the apply request." });
+      return;
+    }
+    setApply({ kind: "creating" });
+    try {
+      const folderId = await getFolderId(sdk);
+      if (folderId === null) {
+        throw new Error("Could not resolve folder ID (needs the OR.Folders.Read scope).");
+      }
+      const patch = fix.prompt_patch.patch_lines.join("\n");
+      const tests = fix.regression_tests.map((t) => t.gauntlet_command).join("\n");
+      const cmd =
+        `python scripts/apply_patch_to_agent.py --fight ${fix.fight_id} --confirm\n` +
+        `# add --deploy to also go live in Orchestrator`;
+      const title = `Gauntlet suggestion · Harden MetroBankCSR — ${fix.persona_name}`;
+
+      // Trigger the serverless RPA process. It runs the Create Form Task activity
+      // FIRST-PARTY on the robot, so it posts a fully rendered Action Center task
+      // (no browser 403). Resolves when the job completes (~30s on serverless).
+      await fileHardeningFormTask(sdk, folderId, {
+        in_TaskTitle: title.slice(0, 240),
+        in_Assignee: "tim.dries@biztory.be",
+        in_persona: fix.persona_name,
+        in_severity: fix.taxonomy.severity,
+        in_owasp: [fix.taxonomy.owasp_llm_top_10].flat().join(", "),
+        in_mitre: [fix.taxonomy.mitre_atlas].flat().join(", "),
+        in_summary: fix.summary,
+        in_tactic: fix.root_cause.tactic,
+        in_rule_violated: fix.root_cause.rule_violated,
+        in_break_quote: fix.root_cause.break_quote,
+        in_patch_section: fix.prompt_patch.section,
+        in_patch: patch,
+        in_rationale: fix.prompt_patch.rationale,
+        in_tests: tests,
+        in_apply_command: cmd,
+        in_agent_prompt_url: tenant.agentBuilderBlue,
+      });
+
+      setApply({ kind: "created", url: actionCenterFolderUrl(folderId) });
+    } catch (e) {
+      setApply({ kind: "error", message: e instanceof Error ? e.message : String(e) });
+    }
+  };
 
   const taskUrl = `${tenant.testManagerProject}?gauntlet=create&fightId=${encodeURIComponent(
     fix.fight_id
@@ -210,7 +269,7 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
       setCreate({
         kind: "saved_local",
         reason:
-          "Not authenticated to UiPath yet. Saved to the local triage queue so it isn't lost - refresh after sign-in to push it live.",
+          "Not authenticated to UiPath yet. Saved to the local triage queue so it isn't lost. Refresh after sign-in to push it live.",
       });
       return;
     }
@@ -219,7 +278,7 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
       const folderId = await getFolderId(sdk);
       if (folderId === null) {
         throw new Error(
-          "Could not resolve numeric folder ID - check the meta tag and OR.Folders.Read scope."
+          "Could not resolve numeric folder ID. Check the meta tag and OR.Folders.Read scope."
         );
       }
       const created = await sdk.tasks.create(
@@ -264,7 +323,7 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
         setCreate({
           kind: "saved_local",
           reason:
-            "Live API blocked: the external OAuth app doesn't have Tasks.Create on this folder. Saved to the local triage queue below - grant the scope to push live.",
+            "Live API blocked: the external OAuth app doesn't have Tasks.Create on this folder. Saved to the local triage queue below. Grant the scope to push live.",
         });
         return;
       }
@@ -400,6 +459,43 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
           <span>Rationale</span>
           <div>{fix.prompt_patch.rationale}</div>
         </div>
+        <div className="reg-file" style={{ marginTop: 12 }}>
+          {apply.kind === "created" ? (
+            <>
+              <span className="tag tag-ok">
+                ✓ Rendered hardening task filed to Action Center
+              </span>
+              {apply.url && (
+                <a href={apply.url} target="_blank" rel="noreferrer">
+                  Open in Action Center ↗
+                </a>
+              )}
+              <a href={tenant.agentBuilderBlue} target="_blank" rel="noreferrer">
+                See agent prompt ↗
+              </a>
+              <span className="fix-block-hint" style={{ marginLeft: 8 }}>
+                A serverless robot ran <code>Create Form Task</code> first-party, so the
+                brief renders in Action Center (Unassigned). On approval,{" "}
+                <code>python scripts/apply_patch_to_agent.py --fight … --confirm</code> patches
+                the prompt into Agent Studio (add <code>--deploy</code> to go live).
+              </span>
+            </>
+          ) : (
+            <button
+              className="btn btn-brand btn-sm"
+              onClick={handleApplyPatch}
+              disabled={apply.kind === "creating"}
+              title="Run the serverless robot that posts a rendered hardening brief into Action Center for approval"
+            >
+              {apply.kind === "creating"
+                ? "Filing via serverless robot…"
+                : "Apply patch to agent →"}
+            </button>
+          )}
+          {apply.kind === "error" && (
+            <span className="reg-file-err">{apply.message}</span>
+          )}
+        </div>
       </section>
 
       <section className="fix-block">
@@ -415,6 +511,13 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
               <div className="fix-test-why">{t.why}</div>
               <div className="fix-test-cmd">
                 <code>{t.gauntlet_command}</code>
+                <button
+                  className="btn btn-brand btn-sm"
+                  onClick={() => setRunningTest(t)}
+                  title="Run this attack live against the (patched) blue agent in your browser"
+                >
+                  ▶ Run
+                </button>
                 <button
                   className="btn btn-ghost btn-sm"
                   onClick={() => copyToClipboard(t.gauntlet_command)}
@@ -501,6 +604,15 @@ function FixProposalView({ fix, fight, onOpenPersona }: ViewProps) {
           </div>
         </div>
       </section>
+
+      {runningTest && (
+        <RegressionRunner
+          test={runningTest}
+          fix={fix}
+          fight={fight}
+          onClose={() => setRunningTest(null)}
+        />
+      )}
     </>
   );
 }
